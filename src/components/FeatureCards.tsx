@@ -338,7 +338,7 @@ function Visual5() {
   ];
 
   const networkBubbles: Bubble[] = [
-    { name: "Fantom", img: "/logos/networks/fantom.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#1969ff", imgScale: 1.06 },
+    { name: "Sui", img: "/logos/networks/sui.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#4DA2FF", imgScale: 1.0 },
     { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, bg: "#0052FF", imgScale: 1.06 },
     { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, bg: "#0d1623", imgScale: 1.0 },
     { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, bg: "#8247e5", imgScale: 1.08 },
@@ -558,6 +558,7 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
   const targetRef = useRef<HTMLDivElement>(null);
   const hasTriggered = useRef(false);
   const [scrambleNow, setScrambleNow] = React.useState(false);
+  const [locked, setLocked] = React.useState(false);
 
   const displayChars = useScrambleText(title, scrambleNow);
 
@@ -579,15 +580,24 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
     return () => observer.disconnect();
   }, []);
 
-  // Lottie complete → trigger scramble
+  // Lottie complete → trigger scramble + turn lock Sui blue
   const onLottieComplete = React.useCallback(() => {
     setScrambleNow(true);
+    setLocked(true);
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
-      {/* Lottie lock — 120px, inverted to white for dark card */}
-      <div className="mb-4 flex-shrink-0 invert">
+      {/* Lottie lock — 120px, white initially, transitions to Sui blue on lock */}
+      <div
+        className="mb-4 flex-shrink-0"
+        style={{
+          filter: locked
+            ? "brightness(0) saturate(100%) invert(58%) sepia(52%) saturate(1041%) hue-rotate(185deg) brightness(103%) contrast(101%)"
+            : "invert(1)",
+          transition: "filter 0.6s ease",
+        }}
+      >
         <Lottie
           lottieRef={lottieRef}
           animationData={lockAnimationData}
