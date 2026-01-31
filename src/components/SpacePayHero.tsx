@@ -34,15 +34,18 @@ export function SpacePayHero() {
           background: linear-gradient(
             97deg,
             #0a0a0a 0%,
-            #0a0a0a 40%,
-            #a8d4f5 50%,
-            #0a0a0a 60%,
+            #0a0a0a 25%,
+            #a8d4f5 45%,
+            #a8d4f5 55%,
+            #0a0a0a 75%,
             #0a0a0a 100%
           );
           background-size: 200% 100%;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
+          -webkit-box-decoration-break: clone;
+          box-decoration-break: clone;
           animation: hero-color-flow 6s linear infinite;
         }
       `}</style>
@@ -133,7 +136,7 @@ export function SpacePayHero() {
         {/* Content — bottom center */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6 px-6">
           <motion.h1
-            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[1.1] py-2"
+            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[1.15] py-3"
             style={{ fontSize: "clamp(44px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
