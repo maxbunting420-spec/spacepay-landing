@@ -135,14 +135,15 @@ export function SpacePayHero() {
         {/* Content — bottom center */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6 px-6">
           <motion.h1
-            className="font-bold text-center tracking-[-0.04em]"
-            style={{ fontSize: "clamp(44px, 8vw, 96px)" }}
+            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[0.95] px-4"
+            style={{ fontSize: "clamp(44px, 8vw, 96px)", paddingTop: 8, paddingBottom: 8 }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.8, ease }}
           >
-            <span className="hero-gradient-text block pb-1">Effortless Crypto</span>
-            <span className="hero-gradient-text block pt-1">Commerce.</span>
+            Effortless Crypto
+            <br />
+            Commerce.
           </motion.h1>
 
           <motion.p
