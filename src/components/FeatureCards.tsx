@@ -437,7 +437,7 @@ function Visual5() {
                     height: "100%",
                     objectFit: "cover",
                     transform: `scale(${(b.iconScale ?? 100) / 100})`,
-                    clipPath: "circle(50%)",
+                    clipPath: "circle(51%)",
                   }}
                 />
               </div>
