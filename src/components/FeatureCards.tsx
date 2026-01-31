@@ -410,33 +410,53 @@ function Visual5() {
               animationDelay: `${i * -1.2}s`,
             }}
           >
-            <div
-              style={{
-                borderRadius: "50%",
-                boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
-                backgroundColor: b.bg,
-                width: "100%",
-                height: "100%",
-                position: "absolute",
-                top: 0,
-                left: 0,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                overflow: "hidden",
-              }}
-            >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
+            {b.iconScale ? (
+              /* Logos that sit INSIDE a colored circle (MetaMask, Brave, etc.) */
+              <div
+                style={{
+                  borderRadius: "50%",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
+                  backgroundColor: b.bg,
+                  width: "100%",
+                  height: "100%",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  overflow: "hidden",
+                }}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={b.img}
+                  alt={b.name}
+                  style={{
+                    objectFit: "contain",
+                    width: `${b.iconScale}%`,
+                    height: `${b.iconScale}%`,
+                  }}
+                />
+              </div>
+            ) : (
+              /* Circular logos that ARE the full circle — render as the circle itself */
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={b.img}
                 alt={b.name}
                 style={{
-                  objectFit: "contain",
-                  width: `${b.iconScale ?? 100}%`,
-                  height: `${b.iconScale ?? 100}%`,
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "50%",
+                  boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
+                  objectFit: "cover",
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
                 }}
               />
-            </div>
+            )}
           </div>
         ))}
       </motion.div>
