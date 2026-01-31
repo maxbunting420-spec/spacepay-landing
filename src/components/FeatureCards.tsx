@@ -178,7 +178,7 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
         <span className="relative inline-block">
           {accentWord},
           {/* Cascading ghost echoes below — just "Gas" without comma */}
-          <span className="absolute left-0 top-full" style={{ color: "rgba(255,255,255,0.2)" }}>
+          <span className="absolute left-0 top-full" style={{ color: "rgba(77,162,255,0.25)" }}>
             {Array.from({ length: 16 }).map((_, i) => (
               <i
                 key={i}
