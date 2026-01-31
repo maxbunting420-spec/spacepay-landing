@@ -22,6 +22,10 @@ export function SpacePayHero() {
         .sp-spin-slow-rev {
           animation: sp-spin-slow-rev 60s linear infinite;
         }
+        @keyframes glow-pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.6; }
+        }
         @keyframes hero-color-flow {
           0% { background-position: 100% 0; }
           100% { background-position: -100% 0; }
@@ -126,14 +130,66 @@ export function SpacePayHero() {
           }}
         />
 
-        {/* Content — bottom center */}
-        <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6">
+        {/* Content — centered */}
+        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center gap-6">
+          {/* 3D Glowing SpacePay logo on pedestal */}
+          <motion.div
+            className="relative"
+            style={{ perspective: "800px" }}
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0, duration: 1, ease }}
+          >
+            {/* Logo with glow */}
+            <div
+              style={{
+                transform: "rotateX(8deg)",
+                transformOrigin: "center bottom",
+              }}
+            >
+              <img
+                src="/logos/spacepay.png"
+                alt="SpacePay"
+                style={{
+                  width: "clamp(100px, 14vw, 140px)",
+                  height: "clamp(100px, 14vw, 140px)",
+                  borderRadius: "28%",
+                  boxShadow:
+                    "0 0 60px rgba(77,162,255,0.45), 0 0 120px rgba(77,162,255,0.2), 0 20px 60px rgba(0,0,0,0.15)",
+                  animation: "glow-pulse 4s ease-in-out infinite",
+                }}
+              />
+            </div>
+            {/* Reflection */}
+            <div
+              style={{
+                marginTop: "2px",
+                transform: "rotateX(8deg) scaleY(-1)",
+                transformOrigin: "center top",
+                maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 60%)",
+                WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 60%)",
+                filter: "blur(4px)",
+                pointerEvents: "none",
+              }}
+            >
+              <img
+                src="/logos/spacepay.png"
+                alt=""
+                style={{
+                  width: "clamp(100px, 14vw, 140px)",
+                  height: "clamp(100px, 14vw, 140px)",
+                  borderRadius: "28%",
+                }}
+              />
+            </div>
+          </motion.div>
+
           <motion.h1
             className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[0.95]"
             style={{ fontSize: "clamp(48px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.06, duration: 0.8, ease }}
+            transition={{ delay: 0.15, duration: 0.8, ease }}
           >
             Effortless Crypto
             <br />
@@ -144,7 +200,7 @@ export function SpacePayHero() {
             className="text-lg font-medium text-[#94a3b8] text-center max-w-[440px]"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.8, ease }}
+            transition={{ delay: 0.25, duration: 0.8, ease }}
           >
             Accept crypto payments from any wallet. Receive fiat same-day. Zero gas fees for your customers.
           </motion.p>
