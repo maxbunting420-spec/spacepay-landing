@@ -580,22 +580,22 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
     return () => observer.disconnect();
   }, []);
 
-  // Lottie complete → trigger scramble + turn lock Sui blue
+  // Lottie complete → trigger scramble + turn lock Sui blue after brief pause
   const onLottieComplete = React.useCallback(() => {
     setScrambleNow(true);
-    setLocked(true);
+    setTimeout(() => setLocked(true), 300);
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
-      {/* Lottie lock — 120px, white initially, transitions to Sui blue on lock */}
+      {/* Lottie lock — 120px, white → Sui blue gentle fade on lock */}
       <div
         className="mb-4 flex-shrink-0"
         style={{
           filter: locked
             ? "brightness(0) saturate(100%) invert(58%) sepia(52%) saturate(1041%) hue-rotate(185deg) brightness(103%) contrast(101%)"
             : "invert(1)",
-          transition: "filter 0.6s ease",
+          transition: locked ? "filter 1.5s ease-out" : "none",
         }}
       >
         <Lottie
