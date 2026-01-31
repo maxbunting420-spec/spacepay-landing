@@ -23,26 +23,23 @@ export function SpacePayHero() {
           animation: sp-spin-slow-rev 60s linear infinite;
         }
         @keyframes hero-color-flow {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+          0% { background-position: 100% 0; }
+          100% { background-position: -100% 0; }
         }
         .hero-gradient-text {
           background: linear-gradient(
             97deg,
             #0a0a0a 0%,
-            #6ba3cc 20%,
-            #a8d4f5 40%,
-            #d6e8f7 55%,
-            #a8d4f5 70%,
-            #6ba3cc 85%,
+            #0a0a0a 40%,
+            #a8d4f5 50%,
+            #0a0a0a 60%,
             #0a0a0a 100%
           );
-          background-size: 300% 100%;
+          background-size: 200% 100%;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           background-clip: text;
-          animation: hero-color-flow 6s ease-in-out infinite;
+          animation: hero-color-flow 6s linear infinite;
         }
       `}</style>
 
