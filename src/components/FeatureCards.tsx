@@ -320,32 +320,34 @@ function Visual4CryptoCard({ title, body }: { title: string; body: string }) {
 function Visual5() {
   const [tab, setTab] = React.useState<"wallets" | "networks">("wallets");
 
-  /* fill = logo already has its own circular/square bg, render edge-to-edge
-     no fill = transparent icon, needs white circle + contained logo */
-  type Bubble = { name: string; img: string; size: number; top: string; left: string; dur: number; fill?: boolean };
+  /* iconScale: how much of the white circle the logo fills.
+     Circular logos = 100% (they fill edge to edge).
+     Transparent-bg icons = smaller so they sit inside the circle nicely.
+     Square-bg logos = 100% + overflow hidden clips to circle. */
+  type Bubble = { name: string; img: string; size: number; top: string; left: string; dur: number; iconScale?: number };
 
   const walletBubbles: Bubble[] = [
-    { name: "MetaMask", img: "/logos/wallets/metamask.png", size: 164, top: "2%", left: "12%", dur: 9 },
-    { name: "Coinbase", img: "/logos/wallets/coinbase.png", size: 120, top: "0%", left: "62%", dur: 11, fill: true },
-    { name: "Rabby", img: "/logos/wallets/rabby.svg", size: 80, top: "32%", left: "2%", dur: 7, fill: true },
-    { name: "Phantom", img: "/logos/wallets/phantom.png", size: 100, top: "30%", left: "50%", dur: 10, fill: true },
-    { name: "WalletConnect", img: "/logos/wallets/walletconnect.png", size: 40, top: "24%", left: "38%", dur: 8, fill: true },
-    { name: "Rainbow", img: "/logos/wallets/rainbow.png", size: 80, top: "54%", left: "70%", dur: 12, fill: true },
-    { name: "Safe", img: "/logos/wallets/safe.png", size: 120, top: "52%", left: "8%", dur: 9, fill: true },
-    { name: "Brave", img: "/logos/wallets/brave.png", size: 100, top: "72%", left: "48%", dur: 8 },
-    { name: "Zerion", img: "/logos/wallets/zerion.svg", size: 64, top: "78%", left: "4%", dur: 7, fill: true },
+    { name: "MetaMask", img: "/logos/wallets/metamask.png", size: 164, top: "2%", left: "12%", dur: 9, iconScale: 70 },
+    { name: "Coinbase", img: "/logos/wallets/coinbase.png", size: 120, top: "0%", left: "62%", dur: 11, iconScale: 100 },
+    { name: "Rabby", img: "/logos/wallets/rabby.svg", size: 80, top: "32%", left: "2%", dur: 7, iconScale: 100 },
+    { name: "Phantom", img: "/logos/wallets/phantom.png", size: 100, top: "30%", left: "50%", dur: 10, iconScale: 100 },
+    { name: "WalletConnect", img: "/logos/wallets/walletconnect.png", size: 40, top: "24%", left: "38%", dur: 8, iconScale: 100 },
+    { name: "Rainbow", img: "/logos/wallets/rainbow.png", size: 80, top: "54%", left: "70%", dur: 12, iconScale: 100 },
+    { name: "Safe", img: "/logos/wallets/safe.png", size: 120, top: "52%", left: "8%", dur: 9, iconScale: 100 },
+    { name: "Brave", img: "/logos/wallets/brave.png", size: 100, top: "72%", left: "48%", dur: 8, iconScale: 70 },
+    { name: "Zerion", img: "/logos/wallets/zerion.svg", size: 64, top: "78%", left: "4%", dur: 7, iconScale: 100 },
   ];
 
   const networkBubbles: Bubble[] = [
-    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, fill: true },
-    { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, fill: true },
-    { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, fill: true },
-    { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, fill: true },
-    { name: "Ethereum", img: "/logos/networks/ethereum.png", size: 80, top: "50%", left: "58%", dur: 7 },
-    { name: "BNB Chain", img: "/logos/networks/bnb.png", size: 80, top: "58%", left: "2%", dur: 8, fill: true },
-    { name: "Optimism", img: "/logos/networks/optimism.png", size: 100, top: "60%", left: "34%", dur: 12, fill: true },
-    { name: "Avalanche", img: "/logos/networks/avalanche.png", size: 80, top: "76%", left: "12%", dur: 9, fill: true },
-    { name: "Solana", img: "/logos/networks/solana.png", size: 120, top: "72%", left: "52%", dur: 10 },
+    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, iconScale: 100 },
+    { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, iconScale: 100 },
+    { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, iconScale: 100 },
+    { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, iconScale: 100 },
+    { name: "Ethereum", img: "/logos/networks/ethereum.png", size: 80, top: "50%", left: "58%", dur: 7, iconScale: 65 },
+    { name: "BNB Chain", img: "/logos/networks/bnb.png", size: 80, top: "58%", left: "2%", dur: 8, iconScale: 100 },
+    { name: "Optimism", img: "/logos/networks/optimism.png", size: 100, top: "60%", left: "34%", dur: 12, iconScale: 100 },
+    { name: "Avalanche", img: "/logos/networks/avalanche.png", size: 80, top: "76%", left: "12%", dur: 9, iconScale: 100 },
+    { name: "Solana", img: "/logos/networks/solana.png", size: 120, top: "72%", left: "52%", dur: 10, iconScale: 65 },
   ];
 
   const activeBubbles = tab === "wallets" ? walletBubbles : networkBubbles;
@@ -409,53 +411,33 @@ function Visual5() {
               animationDelay: `${i * -1.2}s`,
             }}
           >
-            {b.fill ? (
-              /* Logo already has its own background — fill edge-to-edge */
-              /* eslint-disable-next-line @next/next/no-img-element */
+            <div
+              style={{
+                borderRadius: "50%",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
+                backgroundColor: "#fff",
+                width: "100%",
+                height: "100%",
+                position: "absolute",
+                top: 0,
+                left: 0,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                overflow: "hidden",
+              }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={b.img}
                 alt={b.name}
                 style={{
-                  borderRadius: "50%",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
-                  objectFit: "cover",
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
+                  objectFit: "contain",
+                  width: `${b.iconScale ?? 100}%`,
+                  height: `${b.iconScale ?? 100}%`,
                 }}
               />
-            ) : (
-              /* Transparent-bg icon — white circle container */
-              <div
-                style={{
-                  borderRadius: "50%",
-                  boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
-                  backgroundColor: "#fff",
-                  width: "100%",
-                  height: "100%",
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  overflow: "hidden",
-                }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={b.img}
-                  alt={b.name}
-                  style={{
-                    objectFit: "contain",
-                    width: "65%",
-                    height: "65%",
-                  }}
-                />
-              </div>
-            )}
+            </div>
           </div>
         ))}
       </motion.div>
