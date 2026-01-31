@@ -1320,92 +1320,308 @@ function Visual10() {
   return null;
 }
 
-/* 11: CTA — calendar booking, dark card
-   Calendly-ready: install react-calendly, set USE_CALENDLY = true */
-const USE_CALENDLY = false;
+/* 11: CTA — calendar booking, dark card with Calendly integration
+   Replace CALENDLY_URL with your actual Calendly scheduling link */
+const CALENDLY_URL = "https://calendly.com/your-team/30min";
+const V11_CSS_ID = "v11-calendar-css";
 
 function Visual11() {
-  const today = new Date();
-  const month = today.toLocaleString("default", { month: "long" });
-  const year = today.getFullYear();
+  return null; // Rendering handled by Visual11CalendarCard
+}
 
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
-  const calendarDays = Array.from({ length: 28 }, (_, i) => i + 1);
+function Visual11CalendarCard({ title, body }: { title: string; body: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = React.useState(false);
+  const [selectedDay, setSelectedDay] = React.useState<number | null>(null);
+  const [selectedTime, setSelectedTime] = React.useState<number | null>(null);
+  const [showCalendly, setShowCalendly] = React.useState(false);
+
+  // Intersection observer for entrance animation
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.25 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  // Inject keyframes
+  const injected = React.useRef(false);
+  React.useEffect(() => {
+    if (injected.current || typeof document === "undefined") return;
+    if (document.getElementById(V11_CSS_ID)) { injected.current = true; return; }
+    const s = document.createElement("style");
+    s.id = V11_CSS_ID;
+    s.textContent = `
+      @keyframes v11glow {
+        0%, 100% { opacity: 0.4; }
+        50% { opacity: 0.7; }
+      }
+      @keyframes v11fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .v11-calendly-overlay {
+        position: fixed; inset: 0; z-index: 9999;
+        background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
+        display: flex; align-items: center; justify-content: center;
+        animation: v11fadeUp 0.3s ease-out;
+      }
+      .v11-calendly-modal {
+        width: 100%; max-width: 680px; height: 80vh; max-height: 720px;
+        border-radius: 24px; overflow: hidden; position: relative;
+        background: #111; border: 1px solid rgba(255,255,255,0.08);
+        box-shadow: 0 40px 120px rgba(0,0,0,0.6);
+      }
+      .v11-calendly-modal iframe { border: none !important; }
+      .v11-close-btn {
+        position: absolute; top: 16px; right: 16px; z-index: 10;
+        width: 36px; height: 36px; border-radius: 50%;
+        background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.08);
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: background 0.2s;
+      }
+      .v11-close-btn:hover { background: rgba(255,255,255,0.2); }
+    `;
+    document.head.appendChild(s);
+    injected.current = true;
+  }, []);
+
+  // Auto-select a day on entrance
+  React.useEffect(() => {
+    if (!visible) return;
+    const t1 = setTimeout(() => setSelectedDay(18), 600);
+    const t2 = setTimeout(() => setSelectedTime(2), 1000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [visible]);
+
+  // Build calendar grid for current month
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+  const monthName = today.toLocaleString("default", { month: "long" });
+  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+  // 0=Sun, convert to Mon-start: Mon=0..Sun=6
+  const rawStart = new Date(currentYear, currentMonth, 1).getDay();
+  const startOffset = rawStart === 0 ? 6 : rawStart - 1;
+
+  const dayHeaders = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+  const timeSlots = ["10:00 AM", "11:30 AM", "2:00 PM", "3:30 PM"];
+
+  // Available days: weekdays from today+1 onward (simulate real availability)
+  const todayDate = today.getDate();
+  const isAvailable = (day: number) => {
+    if (day <= todayDate) return false;
+    const d = new Date(currentYear, currentMonth, day);
+    const dow = d.getDay();
+    return dow !== 0 && dow !== 6; // weekdays only
+  };
+
+  const isPast = (day: number) => day < todayDate;
+  const isToday = (day: number) => day === todayDate;
+
+  const handleBook = () => {
+    setShowCalendly(true);
+  };
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center overflow-hidden px-6 lg:px-10">
-      <div className="w-full max-w-[320px]">
+    <>
+      <div
+        ref={containerRef}
+        className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-6 md:px-12 lg:px-10 relative overflow-hidden"
+      >
+        {/* Ambient radial glow */}
+        <div
+          className="absolute pointer-events-none"
+          style={{
+            width: 600,
+            height: 600,
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(79,142,247,0.08) 0%, rgba(79,142,247,0.02) 40%, transparent 70%)",
+            animation: visible ? "v11glow 4s ease-in-out infinite" : "none",
+          }}
+        />
+
+        {/* Title + body above calendar */}
+        <div
+          className="relative z-10 mb-8"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)",
+          }}
+        >
+          <h2
+            className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
+            style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
+          >
+            {title}
+          </h2>
+          <p className="mt-4 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[420px]">
+            {body}
+          </p>
+        </div>
+
         {/* Calendar card */}
-        <div className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-5">
-          {/* Month header */}
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-[13px] font-semibold text-white">{month} {year}</p>
-            <div className="flex gap-1.5">
-              <div className="h-6 w-6 rounded-md bg-white/[0.06] flex items-center justify-center">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+        <div
+          className="relative z-10 w-full max-w-[420px]"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0) scale(1)" : "translateY(30px) scale(0.96)",
+            transition: "all 1s cubic-bezier(0.16, 1, 0.3, 1) 0.15s",
+          }}
+        >
+          <div
+            className="rounded-[20px] p-6 md:p-7"
+            style={{
+              background: "linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              backdropFilter: "blur(20px)",
+              boxShadow: "0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.05)",
+            }}
+          >
+            {/* Month header */}
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2.5">
+                <div className="h-8 w-8 rounded-lg bg-white/[0.06] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.5)" strokeWidth="2" strokeLinecap="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" />
+                    <path d="M16 2v4M8 2v4M3 10h18" />
+                  </svg>
+                </div>
+                <p className="text-[15px] font-semibold text-white tracking-[-0.01em]">
+                  {monthName} {currentYear}
+                </p>
               </div>
-              <div className="h-6 w-6 rounded-md bg-white/[0.06] flex items-center justify-center">
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+              <div className="flex gap-1">
+                <button className="h-7 w-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center transition-colors">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+                </button>
+                <button className="h-7 w-7 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] flex items-center justify-center transition-colors">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2.5" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+                </button>
               </div>
             </div>
-          </div>
 
-          {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-1.5">
-            {days.map((d, i) => (
-              <div key={i} className="text-center text-[9px] font-medium text-white/20 py-0.5">{d}</div>
-            ))}
-          </div>
-
-          {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1">
-            {calendarDays.map((day) => {
-              const isSelected = day === 15;
-              const isAvailable = [10, 11, 12, 15, 16, 17, 18, 22, 23, 24, 25].includes(day);
-              return (
+            {/* Day name headers */}
+            <div className="grid grid-cols-7 gap-1 mb-2">
+              {dayHeaders.map((d, i) => (
                 <div
-                  key={day}
-                  className={cn(
-                    "h-7 flex items-center justify-center rounded-md text-[11px] font-medium transition-colors",
-                    isSelected
-                      ? "bg-white text-[#0a0a0a]"
-                      : isAvailable
-                        ? "bg-white/[0.06] text-white/60"
-                        : "text-white/12"
-                  )}
+                  key={i}
+                  className="text-center text-[11px] font-medium text-white/25 py-1"
                 >
-                  {day}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Time slots */}
-          <div className="mt-4 pt-3.5 border-t border-white/[0.06]">
-            <div className="flex gap-1.5">
-              {["10:00", "11:30", "14:00", "15:30"].map((time, i) => (
-                <div
-                  key={time}
-                  className={cn(
-                    "flex-1 rounded-md py-1.5 text-[10px] font-medium text-center",
-                    i === 2
-                      ? "bg-white text-[#0a0a0a]"
-                      : "bg-white/[0.06] text-white/40"
-                  )}
-                >
-                  {time}
+                  {d}
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Book button */}
-          <button className="w-full h-[38px] rounded-xl bg-white text-[13px] font-semibold text-[#0a0a0a] mt-3.5 transition-all active:scale-[0.98]">
-            Book a Call
-          </button>
+            {/* Calendar grid */}
+            <div className="grid grid-cols-7 gap-1">
+              {/* Empty cells for offset */}
+              {Array.from({ length: startOffset }).map((_, i) => (
+                <div key={`empty-${i}`} className="h-9" />
+              ))}
+              {/* Day cells */}
+              {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+                const selected = day === selectedDay;
+                const available = isAvailable(day);
+                const past = isPast(day);
+                const todayMark = isToday(day);
+
+                return (
+                  <button
+                    key={day}
+                    onClick={() => available && setSelectedDay(day)}
+                    disabled={!available}
+                    className={cn(
+                      "h-9 flex items-center justify-center rounded-[10px] text-[13px] font-medium transition-all duration-200 relative",
+                      selected
+                        ? "bg-white text-[#0a0a0a] shadow-[0_2px_12px_rgba(255,255,255,0.2)]"
+                        : available
+                          ? "bg-white/[0.04] text-white/70 hover:bg-white/[0.1] hover:text-white cursor-pointer"
+                          : past
+                            ? "text-white/[0.08] cursor-default"
+                            : "text-white/15 cursor-default"
+                    )}
+                  >
+                    {day}
+                    {todayMark && !selected && (
+                      <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-white/30" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Time slots */}
+            <div className="mt-5 pt-5 border-t border-white/[0.06]">
+              <p className="text-[11px] font-medium text-white/25 mb-3 uppercase tracking-[0.08em]">
+                Available times
+              </p>
+              <div className="grid grid-cols-4 gap-2">
+                {timeSlots.map((time, i) => (
+                  <button
+                    key={time}
+                    onClick={() => setSelectedTime(i)}
+                    className={cn(
+                      "rounded-[10px] py-2.5 text-[12px] font-semibold text-center transition-all duration-200",
+                      selectedTime === i
+                        ? "bg-white text-[#0a0a0a] shadow-[0_2px_12px_rgba(255,255,255,0.15)]"
+                        : "bg-white/[0.04] text-white/50 hover:bg-white/[0.1] hover:text-white/80"
+                    )}
+                  >
+                    {time}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Book button */}
+            <button
+              onClick={handleBook}
+              className={cn(
+                "w-full h-[48px] rounded-2xl text-[15px] font-semibold mt-5 transition-all duration-300 relative overflow-hidden",
+                selectedDay && selectedTime !== null
+                  ? "bg-white text-[#0a0a0a] hover:shadow-[0_4px_24px_rgba(255,255,255,0.2)] active:scale-[0.98]"
+                  : "bg-white/[0.06] text-white/30 cursor-default"
+              )}
+              disabled={!selectedDay || selectedTime === null}
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                  <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                </svg>
+                Book a Call
+              </span>
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Calendly modal overlay */}
+      {showCalendly && (
+        <div className="v11-calendly-overlay" onClick={() => setShowCalendly(false)}>
+          <div className="v11-calendly-modal" onClick={(e) => e.stopPropagation()}>
+            <button className="v11-close-btn" onClick={() => setShowCalendly(false)}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
+            <iframe
+              src={`${CALENDLY_URL}?hide_gdpr_banner=1&background_color=111111&text_color=ffffff&primary_color=4f8ef7`}
+              title="Book a call with SpacePay"
+              style={{ width: "100%", height: "100%", border: "none" }}
+            />
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1534,6 +1750,7 @@ function FeatureCard({
   const isCryptoCard = i === 8;
   const isPayCard = i === 9;
   const isCheckoutCard = i === 7;
+  const isCalendarCard = i === 10;
 
   return (
     <div className="flex items-center justify-center sticky top-[80px] h-screen max-h-[720px] min-h-[500px]">
@@ -1554,6 +1771,8 @@ function FeatureCard({
           <Visual4CryptoCard title={card.title} body={card.body} />
         ) : isGaslessCard ? (
           <Visual3GaslessCard title={card.title} body={card.body} />
+        ) : isCalendarCard ? (
+          <Visual11CalendarCard title={card.title} body={card.body} />
         ) : (
           <div
             className={cn(
