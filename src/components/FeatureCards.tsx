@@ -435,8 +435,9 @@ function Visual5() {
                   style={{
                     width: "100%",
                     height: "100%",
-                    objectFit: "contain",
+                    objectFit: "cover",
                     transform: `scale(${(b.iconScale ?? 100) / 100})`,
+                    clipPath: "circle(50%)",
                   }}
                 />
               </div>
