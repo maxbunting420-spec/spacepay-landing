@@ -34,10 +34,9 @@ export function SpacePayHero() {
           background: linear-gradient(
             97deg,
             #0a0a0a 0%,
-            #0a0a0a 25%,
-            #a8d4f5 45%,
-            #a8d4f5 55%,
-            #0a0a0a 75%,
+            #0a0a0a 40%,
+            #a8d4f5 50%,
+            #0a0a0a 60%,
             #0a0a0a 100%
           );
           background-size: 200% 100%;
@@ -136,15 +135,14 @@ export function SpacePayHero() {
         {/* Content — bottom center */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6 px-6">
           <motion.h1
-            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[1.15] py-3"
+            className="font-bold text-center tracking-[-0.04em]"
             style={{ fontSize: "clamp(44px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.8, ease }}
           >
-            Effortless Crypto
-            <br />
-            Commerce.
+            <span className="hero-gradient-text block pb-1">Effortless Crypto</span>
+            <span className="hero-gradient-text block pt-1">Commerce.</span>
           </motion.h1>
 
           <motion.p
