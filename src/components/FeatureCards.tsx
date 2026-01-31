@@ -6,6 +6,7 @@ import {
   motion,
   useScroll,
   MotionValue,
+  AnimatePresence,
 } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Lottie from "lottie-react";
@@ -16,9 +17,53 @@ import { SpacePayAPIPlayground } from "@/components/SpacePayAPI";
    VISUALS — oversized, edge-bleeding, fills the column
    ================================================================ */
 
-/* 1: SDK — API Playground, full-bleed like holyheld */
+/* 1: SDK — API Playground, 3D tilted like the dashboard card */
 function Visual1() {
-  return <SpacePayAPIPlayground />;
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = React.useState(false);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setVisible(true); observer.disconnect(); }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
+      <div
+        className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
+        style={{
+          width: 620,
+          top: -20,
+          right: -60,
+          bottom: -80,
+          transform: visible
+            ? "rotateY(-12deg) rotateX(2deg) translateZ(0px)"
+            : "rotateY(-30deg) rotateX(6deg) translateZ(-80px) translateX(100px)",
+          opacity: visible ? 1 : 0,
+          transformStyle: "preserve-3d",
+        }}
+      >
+        <div
+          className="h-full rounded-2xl overflow-hidden bg-white"
+          style={{
+            boxShadow: visible
+              ? "-40px 40px 100px rgba(0,0,0,0.12), -10px 10px 30px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04)"
+              : "none",
+          }}
+        >
+          <SpacePayAPIPlayground />
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* 2: Settlement — infinite stacking list, cycles through items, never removes */
@@ -120,20 +165,20 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
       />
 
       {/* Description above title (order: -1 like holyheld) */}
-      <p className="text-[16px] leading-[1.7] text-[#737373] mx-auto max-w-[780px] mb-4">
+      <p className="text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[780px] mb-4">
         {body}
       </p>
 
       {/* Big title with cascading accent word on "gas" — holyheld gasless style */}
       <h2
-        className="font-bold leading-[1] tracking-[-0.04em] text-[#0a0a0a] whitespace-nowrap"
+        className="font-bold leading-[1] tracking-[-0.04em] text-white whitespace-nowrap"
         style={{ fontSize: "clamp(36px, 6vw, 64px)" }}
       >
         <span className="relative inline-block">Zero</span>{" "}
         <span className="relative inline-block">
           {accentWord},
           {/* Cascading ghost echoes below — just "Gas" without comma */}
-          <span className="absolute left-0 top-full" style={{ color: "rgba(163,163,163,0.5)" }}>
+          <span className="absolute left-0 top-full" style={{ color: "rgba(255,255,255,0.2)" }}>
             {Array.from({ length: 16 }).map((_, i) => (
               <i
                 key={i}
@@ -156,58 +201,109 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
   );
 }
 
-/* 4: Crypto→Fiat — oversized conversion flow mockup */
+/* 4: Crypto→Fiat — large rolling dollar counter, full-bleed dark card */
 function Visual4() {
+  return null; // Rendering handled by Visual4CryptoCard
+}
+
+const V4_TARGET = 888888.88;
+const V4_DURATION = 2500; // ms to count up
+const V4_CSS_ID = "v4-counter-css";
+
+function Visual4CryptoCard({ title, body }: { title: string; body: string }) {
+  const [count, setCount] = React.useState(0);
+  const [started, setStarted] = React.useState(false);
+  const targetRef = React.useRef<HTMLDivElement>(null);
+
+  // Intersection observer to trigger count
+  React.useEffect(() => {
+    const el = targetRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started) {
+          setStarted(true);
+          obs.disconnect();
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [started]);
+
+  // Animate count up with easeOutExpo, then keep ticking slowly
+  React.useEffect(() => {
+    if (!started) return;
+    const start = performance.now();
+    let raf: number;
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / V4_DURATION, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      // After initial count-up, keep adding ~$12/sec
+      const extra = progress >= 1 ? (elapsed - V4_DURATION) / 1000 * 12.47 : 0;
+      setCount(eased * V4_TARGET + extra);
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [started]);
+
+  // Inject CSS for the subtle glow pulse
+  const injected = React.useRef(false);
+  React.useEffect(() => {
+    if (injected.current || typeof document === "undefined") return;
+    if (document.getElementById(V4_CSS_ID)) { injected.current = true; return; }
+    const s = document.createElement("style");
+    s.id = V4_CSS_ID;
+    s.textContent = `
+      @keyframes v4glow {
+        0%, 100% { text-shadow: 0 0 40px rgba(34,197,94,0.15); }
+        50% { text-shadow: 0 0 80px rgba(34,197,94,0.3); }
+      }
+    `;
+    document.head.appendChild(s);
+    injected.current = true;
+  }, []);
+
+  // Format number with commas and 2 decimal places
+  const formatted = "$" + count.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   return (
-    <div className="absolute inset-0 flex items-center justify-center overflow-hidden px-6 lg:px-10">
-      <div className="w-full max-w-[420px] space-y-4">
-        {/* From: Crypto */}
-        <div className="rounded-2xl bg-[#fafafa] border border-[#e5e5e5] p-5">
-          <p className="text-[11px] font-medium text-[#a3a3a3] uppercase tracking-[0.08em] mb-3">You receive</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-[#627eea] flex items-center justify-center">
-                <svg width="16" height="26" viewBox="0 0 256 417" fill="none"><path d="M127.961 0l-2.795 9.5v275.668l2.795 2.79 127.962-75.638z" fill="#fff"/><path d="M127.962 0L0 212.32l127.962 75.639V154.158z" fill="#fff" opacity=".6"/></svg>
-              </div>
-              <div>
-                <p className="text-[16px] font-semibold text-[#0a0a0a]">1.24 ETH</p>
-                <p className="text-[12px] text-[#a3a3a3]">Ethereum</p>
-              </div>
-            </div>
-            <p className="text-[20px] font-bold text-[#0a0a0a]">$4,200</p>
-          </div>
-        </div>
-
-        {/* Arrow */}
-        <div className="flex justify-center">
-          <div className="h-10 w-10 rounded-full bg-[#0a0a0a] flex items-center justify-center shadow-lg">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 5v14M19 12l-7 7-7-7" />
-            </svg>
-          </div>
-        </div>
-
-        {/* To: USD */}
-        <div className="rounded-2xl bg-[#f0fdf4] border border-[#bbf7d0] p-5">
-          <p className="text-[11px] font-medium text-[#22c55e] uppercase tracking-[0.08em] mb-3">Your bank gets</p>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-full bg-[#22c55e] flex items-center justify-center">
-                <span className="text-[18px] font-bold text-white">$</span>
-              </div>
-              <div>
-                <p className="text-[16px] font-semibold text-[#0a0a0a]">USD</p>
-                <p className="text-[12px] text-[#22c55e]">Same-day settlement</p>
-              </div>
-            </div>
-            <p className="text-[20px] font-bold text-[#22c55e]">$4,200</p>
-          </div>
-        </div>
-
-        <div className="text-center">
-          <p className="text-[12px] text-[#a3a3a3]">0% slippage · No volatility exposure</p>
-        </div>
+    <div
+      ref={targetRef}
+      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative"
+    >
+      {/* Large counter */}
+      <div
+        className="mb-4 flex-shrink-0 tabular-nums"
+        style={{
+          fontSize: "clamp(56px, 10vw, 100px)",
+          fontWeight: 700,
+          letterSpacing: "-0.04em",
+          lineHeight: 1,
+          color: "#22c55e",
+          animation: started ? "v4glow 3s ease-in-out infinite" : "none",
+          fontVariantNumeric: "tabular-nums",
+        }}
+      >
+        {formatted}
       </div>
+
+      <h2
+        className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
+        style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
+      >
+        {title}
+      </h2>
+
+      <p className="mt-4 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[420px]">
+        {body}
+      </p>
     </div>
   );
 }
@@ -956,111 +1052,168 @@ function Visual8() {
   );
 }
 
-/* 9: Every way to pay — holyheld-style dense ASCII art credit card */
-const PAY_SYMS = ["$", "€", "£"];
+/* 9: Every way to pay — NFC radar arcs from title text
+   The outermost arc width = title text width (~480px).
+   Arcs emerge upward from the top edge of the title. */
 
-// Dense credit card — 28 rows x 48 cols, packed solid like holyheld
-// Every "#" is a currency symbol, tightly packed, no gaps inside
-const PAY_R = 28;
-const PAY_C = 48;
+const PAY_S = ["$", "€", "£"];
+const NFC_PX = 4;
 
-// Generate a filled rounded-rect credit card shape procedurally
-function buildPayGrid() {
-  const grid: { show: boolean; sym: string; op: number }[][] = [];
-  const rx = 4; // corner radius in cells
-  const chipT = 6, chipL = 4, chipB = 12, chipR = 12; // chip area
-  const stripeT = 5, stripeB = 8; // magnetic stripe
-  const sigT = 18, sigB = 22, sigL = 28, sigR = 44; // signature block
+// Target: outermost arc diameter ≈ 480px → radius ≈ 240px → 60 cells
+const ARC_BANDS = 6;
+const ARC_THICK = 5;
+const ARC_GAP = 3;
+const ARC_START = 2;
+// Max radius = 2 + 6*(5+3) = 50 cells → 200px diameter = 400px
+// That's about right for "Every way to pay." at clamp(28–44px)
+const ARC_MAX = ARC_START + ARC_BANDS * (ARC_THICK + ARC_GAP);
+const NFC_ROWS = ARC_MAX + 1;
+const NFC_COLS = ARC_MAX * 2 + 2;
 
-  for (let r = 0; r < PAY_R; r++) {
-    const row: { show: boolean; sym: string; op: number }[] = [];
-    for (let c = 0; c < PAY_C; c++) {
-      // Rounded corners
-      let inside = true;
-      // Top-left
-      if (r < rx && c < rx) { const d = Math.sqrt((rx-r-0.5)**2+(rx-c-0.5)**2); if (d > rx) inside = false; }
-      // Top-right
-      if (r < rx && c >= PAY_C-rx) { const d = Math.sqrt((rx-r-0.5)**2+(rx-(PAY_C-1-c)-0.5)**2); if (d > rx) inside = false; }
-      // Bottom-left
-      if (r >= PAY_R-rx && c < rx) { const d = Math.sqrt((rx-(PAY_R-1-r)-0.5)**2+(rx-c-0.5)**2); if (d > rx) inside = false; }
-      // Bottom-right
-      if (r >= PAY_R-rx && c >= PAY_C-rx) { const d = Math.sqrt((rx-(PAY_R-1-r)-0.5)**2+(rx-(PAY_C-1-c)-0.5)**2); if (d > rx) inside = false; }
-
-      if (!inside) { row.push({ show: false, sym: " ", op: 0 }); continue; }
-
-      // Determine opacity — create depth shading
-      // Edges brighter, interior has variation
-      const edgeDist = Math.min(r, c, PAY_R-1-r, PAY_C-1-c);
-      const edgeFactor = Math.min(edgeDist / 6, 1);
-
-      // Chip area — empty
-      const isChip = r >= chipT && r <= chipB && c >= chipL && c <= chipR;
-      // Magnetic stripe — different brightness
-      const isStripe = r >= stripeT && r <= stripeB;
-      // Signature block
-      const isSig = r >= sigT && r <= sigB && c >= sigL && c <= sigR;
-
-      if (isChip) {
-        // Chip: brighter, denser
-        const seed = (r * 23 + c * 41) % 100;
-        row.push({ show: true, sym: PAY_SYMS[(r+c)%3], op: 0.5 + (seed/100) * 0.35 });
-      } else if (isStripe) {
-        // Stripe: very bright solid band
-        const seed = (r * 17 + c * 29) % 100;
-        row.push({ show: true, sym: PAY_SYMS[(r+c)%3], op: 0.55 + (seed/100) * 0.3 });
-      } else if (isSig) {
-        // Sig block: medium brightness
-        const seed = (r * 37 + c * 13) % 100;
-        row.push({ show: true, sym: PAY_SYMS[(r+c)%3], op: 0.3 + (seed/100) * 0.3 });
-      } else {
-        // General fill — varying opacity, dimmer in middle, brighter edges
-        const seed = (r * 31 + c * 17 + r * c * 3) % 100;
-        const baseOp = 0.08 + edgeFactor * 0.15 + (seed/100) * 0.35;
-        row.push({ show: true, sym: PAY_SYMS[(r+c)%3], op: Math.min(baseOp, 0.65) });
+function buildNfcGrid(): { band: number; sym: string; op: number }[][] {
+  const grid: { band: number; sym: string; op: number }[][] = [];
+  const cx = NFC_COLS / 2;
+  const cy = NFC_ROWS;
+  for (let r = 0; r < NFC_ROWS; r++) {
+    const row: { band: number; sym: string; op: number }[] = [];
+    for (let c = 0; c < NFC_COLS; c++) {
+      const dx = c - cx;
+      const dy = cy - r;
+      if (dy <= 0) { row.push({ band: -1, sym: " ", op: 0 }); continue; }
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const adj = dist - ARC_START;
+      if (adj < 0) { row.push({ band: -1, sym: " ", op: 0 }); continue; }
+      const sp = ARC_THICK + ARC_GAP;
+      const bi = Math.floor(adj / sp);
+      const pos = adj - bi * sp;
+      if (bi >= ARC_BANDS || pos >= ARC_THICK) {
+        row.push({ band: -1, sym: " ", op: 0 }); continue;
       }
+      const fade = 1 - (bi / ARC_BANDS) * 0.4;
+      const seed = ((r * 31 + c * 17 + r * c * 7) % 100) / 100;
+      const op = Math.min(fade * (0.5 + seed * 0.4), 0.8);
+      row.push({ band: bi, sym: PAY_S[(r + c) % 3], op });
     }
     grid.push(row);
   }
   return grid;
 }
 
-const PAY_GRID = buildPayGrid();
+const NFC_G = buildNfcGrid();
+const NFC_BAND_CELLS: Map<number, { r: number; c: number; sym: string; op: number }[]> = new Map();
+NFC_G.forEach((row, r) => row.forEach((cell, c) => {
+  if (cell.band >= 0) {
+    if (!NFC_BAND_CELLS.has(cell.band)) NFC_BAND_CELLS.set(cell.band, []);
+    NFC_BAND_CELLS.get(cell.band)!.push({ r, c, sym: cell.sym, op: cell.op });
+  }
+}));
+
+const NFC_CSS_ID = "nfc-radar-css";
 
 function Visual9PayCard({ title, body }: { title: string; body: string }) {
+  const injected = React.useRef(false);
+  const measureRef = React.useRef<HTMLSpanElement>(null);
+  const [titleW, setTitleW] = React.useState(0);
+
+  React.useEffect(() => {
+    if (injected.current || typeof document === "undefined") return;
+    if (document.getElementById(NFC_CSS_ID)) { injected.current = true; return; }
+    const el = document.createElement("style");
+    el.id = NFC_CSS_ID;
+    el.textContent = `
+      @keyframes nfcPulse {
+        0%, 100% { opacity: 0.06; }
+        15% { opacity: 1; }
+        40% { opacity: 1; }
+        60% { opacity: 0.06; }
+      }
+    `;
+    document.head.appendChild(el);
+    injected.current = true;
+  }, []);
+
+  // Measure title width via hidden span
+  React.useEffect(() => {
+    const el = measureRef.current;
+    if (!el) return;
+    const measure = () => setTitleW(el.offsetWidth);
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
+  // Scale the grid to match title width
+  const rawGridW = NFC_COLS * NFC_PX;
+  const scale = titleW > 0 ? titleW / rawGridW : 1;
+  const gridH = NFC_ROWS * NFC_PX * scale;
+
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
-      {/* Dense ASCII credit card — holyheld style */}
-      <div className="mb-8 select-none" aria-hidden="true" style={{ fontFamily: "'SF Mono', 'Menlo', 'Monaco', 'Courier New', monospace" }}>
-        {PAY_GRID.map((row, ri) => (
-          <div key={ri} style={{ height: 9, lineHeight: "9px", whiteSpace: "nowrap" }}>
-            {row.map((cell, ci) => (
-              <span
-                key={ci}
+      {/* Arcs — full perfect semicircle */}
+      <div className="flex-shrink-0" style={{ width: titleW > 0 ? titleW : 120, height: titleW > 0 ? titleW / 2 : 60, position: "relative", overflow: "hidden" }}>
+        {titleW > 0 && (
+          <div
+            className="absolute inset-0 select-none pointer-events-none"
+            aria-hidden="true"
+            style={{
+              fontFamily: "'SF Mono',Menlo,Monaco,'Courier New',monospace",
+              maskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 100%)",
+              WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, black 15%, black 100%)",
+            }}
+          >
+            {Array.from(NFC_BAND_CELLS.entries()).map(([band, cells]) => (
+              <div
+                key={band}
                 style={{
-                  display: "inline-block",
-                  width: 8,
-                  fontSize: 7,
-                  fontWeight: 800,
-                  textAlign: "center",
-                  color: cell.show ? `rgba(255,255,255,${cell.op})` : "transparent",
-                  letterSpacing: 0,
+                  position: "absolute",
+                  inset: 0,
+                  animation: `nfcPulse 3s ease-in-out infinite`,
+                  animationDelay: `${band * 0.35}s`,
                 }}
               >
-                {cell.show ? cell.sym : "\u00A0"}
-              </span>
+                {cells.map((cell, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      position: "absolute",
+                      left: cell.c * NFC_PX * scale,
+                      top: cell.r * NFC_PX * scale,
+                      width: NFC_PX * scale,
+                      height: NFC_PX * scale,
+                      fontSize: (NFC_PX - 0.5) * scale,
+                      fontWeight: 700,
+                      textAlign: "center",
+                      lineHeight: `${NFC_PX * scale}px`,
+                      color: `rgba(0,0,0,${cell.op})`,
+                    }}
+                  >
+                    {cell.sym}
+                  </span>
+                ))}
+              </div>
             ))}
           </div>
-        ))}
+        )}
       </div>
 
       <h2
-        className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
+        className="font-semibold leading-[1.05] tracking-[-0.035em] text-[#0a0a0a] max-w-[520px]"
         style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
       >
         {title}
       </h2>
 
-      <p className="mt-4 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[420px]">
+      {/* Hidden span to measure text width */}
+      <span
+        ref={measureRef}
+        className="font-semibold tracking-[-0.035em] absolute opacity-0 pointer-events-none whitespace-nowrap"
+        style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
+        aria-hidden="true"
+      >
+        {title}
+      </span>
+
+      <p className="mt-4 text-[16px] leading-[1.7] text-[#737373] mx-auto max-w-[420px]">
         {body}
       </p>
     </div>
@@ -1071,85 +1224,106 @@ function Visual9() {
   return null; // Rendering handled by Visual9PayCard in FeatureCard
 }
 
-/* 10: Checkout — full phone mockup with checkout flow, bleeding bottom */
-function Visual10() {
+/* 10: Checkout — iPhone mockup showing SpacePay checkout screen.
+   Replicates the real SpacePay payment UI from the screenshot.
+   The "Pay" button at the bottom animates: Pay → Processing → ✓ Paid */
+
+function Visual10CheckoutCard({ title, body }: { title: string; body: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = React.useState(false);
+  const [phase, setPhase] = React.useState(0);
+  const cycleRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  React.useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
+      { threshold: 0.2 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  React.useEffect(() => {
+    if (!visible) return;
+    const clearAll = () => cycleRef.current.forEach(clearTimeout);
+    const run = () => {
+      clearAll();
+      cycleRef.current = [
+        setTimeout(() => setPhase(1), 2000),
+        setTimeout(() => setPhase(2), 4200),
+        setTimeout(() => { setPhase(0); run(); }, 7200),
+      ];
+    };
+    run();
+    return clearAll;
+  }, [visible]);
+
   return (
-    <div className="absolute inset-0 flex items-end justify-center overflow-hidden">
-      <div className="w-[300px] md:w-[340px] translate-y-12">
-        {/* Phone frame */}
-        <div className="rounded-t-[36px] bg-[#0a0a0a] p-[3px] shadow-[0_-16px_60px_rgba(0,0,0,0.12)]">
-          {/* Notch */}
-          <div className="flex justify-center pt-2 pb-1">
-            <div className="h-[5px] w-[80px] rounded-full bg-white/20" />
+    <div
+      ref={containerRef}
+      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-20 relative overflow-hidden"
+    >
+      <style>{`
+        .v10-btn { width: 100%; max-width: 380px; height: 64px; border-radius: 16px; background: #4f8ef7; position: relative; overflow: hidden; }
+        .v10-layer { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s ease, transform 0.5s ease; will-change: opacity, transform; }
+        .v10-layer[data-active="false"] { opacity: 0; transform: scale(0.97); pointer-events: none; }
+        .v10-layer[data-active="true"] { opacity: 1; transform: scale(1); pointer-events: auto; }
+      `}</style>
+
+      {/* The button — pure CSS transitions, fixed size, never moves */}
+      <div className="v10-btn">
+        {/* Phase 0: Pay with Crypto */}
+        <div className="v10-layer" data-active={String(phase === 0)}>
+          <span className="text-[17px] font-semibold text-white tracking-[-0.02em]">Pay with Crypto</span>
+        </div>
+
+        {/* Phase 1: Wallet + amount + confirm */}
+        <div className="v10-layer gap-4 px-5" data-active={String(phase === 1)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logos/wallets/metamask.png" alt="" className="h-8 w-8 rounded-lg" />
+          <div className="flex-1 min-w-0 text-left">
+            <p className="text-[14px] font-semibold text-white tracking-[-0.01em]">42.00 USDC</p>
+            <p className="text-[10px] text-white/50 mt-px">Polygon · $0.00 gas</p>
           </div>
-          {/* Screen */}
-          <div className="rounded-t-[32px] bg-white overflow-hidden">
-            {/* Status bar */}
-            <div className="flex justify-between items-center px-6 py-2">
-              <span className="text-[11px] font-semibold text-[#0a0a0a]">9:41</span>
-              <div className="flex gap-1">
-                <svg width="14" height="10" viewBox="0 0 14 10" fill="#1a1a1a"><rect x="0" y="3" width="2" height="7" rx="0.5"/><rect x="3" y="2" width="2" height="8" rx="0.5"/><rect x="6" y="1" width="2" height="9" rx="0.5"/><rect x="9" y="0" width="2" height="10" rx="0.5"/></svg>
-                <svg width="16" height="10" viewBox="0 0 25 12" fill="#1a1a1a"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#1a1a1a" strokeWidth="1" fill="none"/><rect x="23" y="4" width="2" height="4" rx="1" fill="#1a1a1a" opacity=".4"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill="#1a1a1a"/></svg>
-              </div>
-            </div>
-
-            {/* Checkout content */}
-            <div className="px-5 pb-6 pt-2">
-              <div className="flex items-center justify-between mb-5">
-                <div className="flex items-center gap-2">
-                  <div className="h-7 w-7 rounded-lg bg-[#0a0a0a] flex items-center justify-center">
-                    <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-                      <path d="M4 7.25C4 5.5 5.25 4 7 4s3 1.5 3 3.25-1.25 2.75-3 2.75" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" />
-                      <circle cx="7" cy="7.25" r="1" fill="#fff" />
-                    </svg>
-                  </div>
-                  <span className="text-[12px] font-medium text-[#0a0a0a]">SpacePay</span>
-                </div>
-                <div className="rounded-full bg-[#f0fdf4] px-2 py-0.5 text-[9px] font-medium text-[#22c55e]">Secure</div>
-              </div>
-
-              <div className="text-center mb-5">
-                <p className="text-[10px] text-[#a3a3a3] uppercase tracking-[0.1em] mb-1">Total</p>
-                <p className="text-[32px] font-bold tracking-[-0.03em] text-[#0a0a0a]">$42.00</p>
-              </div>
-
-              <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2.5 rounded-xl border-2 border-[#1a1a1a] bg-[#fafafa] px-3 py-2.5">
-                  <div className="h-7 w-7 rounded-full bg-[#627eea] flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-white">ETH</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[12px] font-medium text-[#0a0a0a]">Ethereum</p>
-                    <p className="text-[10px] text-[#a3a3a3]">0.013 ETH · $0 gas</p>
-                  </div>
-                  <div className="h-4 w-4 rounded-full bg-[#0a0a0a] flex items-center justify-center">
-                    <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round"><path d="M5 13l4 4L19 7" /></svg>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2.5 rounded-xl border border-[#e5e5e5] px-3 py-2.5">
-                  <div className="h-7 w-7 rounded-full bg-[#2775ca] flex items-center justify-center">
-                    <span className="text-[8px] font-bold text-white">$</span>
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-[12px] font-medium text-[#0a0a0a]">USDC</p>
-                    <p className="text-[10px] text-[#a3a3a3]">42.00 USDC</p>
-                  </div>
-                  <div className="h-4 w-4 rounded-full border border-[#ccc]" />
-                </div>
-              </div>
-
-              <button className="w-full h-[42px] rounded-xl bg-[#0a0a0a] text-[13px] font-semibold text-white">
-                Confirm Payment
-              </button>
-            </div>
+          <div className="rounded-lg bg-white/20 px-3.5 py-1.5">
+            <span className="text-[12px] font-semibold text-white">Confirm</span>
           </div>
         </div>
+
+        {/* Phase 2: Done */}
+        <div className="v10-layer gap-2.5" data-active={String(phase === 2)}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+          <span className="text-[17px] font-semibold text-white tracking-[-0.02em]">Paid</span>
+        </div>
       </div>
+
+      {/* Title */}
+      <h2
+        className="font-semibold leading-[1.05] tracking-[-0.035em] text-[#0a0a0a] max-w-[520px] mt-10"
+        style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
+      >
+        {title}
+      </h2>
+
+      <p className="mt-4 text-[16px] leading-[1.7] text-[#737373] mx-auto max-w-[420px]">
+        {body}
+      </p>
     </div>
   );
 }
 
-/* 11: CTA — calendar booking UI, dark card */
+function Visual10() {
+  return null;
+}
+
+/* 11: CTA — calendar booking, dark card
+   Calendly-ready: install react-calendly, set USE_CALENDLY = true */
+const USE_CALENDLY = false;
+
 function Visual11() {
   const today = new Date();
   const month = today.toLocaleString("default", { month: "long" });
@@ -1160,26 +1334,26 @@ function Visual11() {
 
   return (
     <div className="absolute inset-0 flex items-center justify-center overflow-hidden px-6 lg:px-10">
-      <div className="w-full max-w-[380px]">
+      <div className="w-full max-w-[320px]">
         {/* Calendar card */}
-        <div className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-5 backdrop-blur-sm">
+        <div className="rounded-2xl bg-white/[0.06] border border-white/[0.08] p-5">
           {/* Month header */}
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[14px] font-semibold text-white">{month} {year}</p>
-            <div className="flex gap-2">
-              <div className="h-7 w-7 rounded-lg bg-white/[0.06] flex items-center justify-center">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
+            <p className="text-[13px] font-semibold text-white">{month} {year}</p>
+            <div className="flex gap-1.5">
+              <div className="h-6 w-6 rounded-md bg-white/[0.06] flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round"><path d="M15 18l-6-6 6-6" /></svg>
               </div>
-              <div className="h-7 w-7 rounded-lg bg-white/[0.06] flex items-center justify-center">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
+              <div className="h-6 w-6 rounded-md bg-white/[0.06] flex items-center justify-center">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="2" strokeLinecap="round"><path d="M9 18l6-6-6-6" /></svg>
               </div>
             </div>
           </div>
 
           {/* Day headers */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className="grid grid-cols-7 gap-1 mb-1.5">
             {days.map((d, i) => (
-              <div key={i} className="text-center text-[10px] font-medium text-white/30 py-1">{d}</div>
+              <div key={i} className="text-center text-[9px] font-medium text-white/20 py-0.5">{d}</div>
             ))}
           </div>
 
@@ -1192,12 +1366,12 @@ function Visual11() {
                 <div
                   key={day}
                   className={cn(
-                    "h-8 flex items-center justify-center rounded-lg text-[12px] font-medium transition-colors",
+                    "h-7 flex items-center justify-center rounded-md text-[11px] font-medium transition-colors",
                     isSelected
                       ? "bg-white text-[#0a0a0a]"
                       : isAvailable
-                        ? "bg-white/[0.06] text-white/70 hover:bg-white/[0.12]"
-                        : "text-white/15"
+                        ? "bg-white/[0.06] text-white/60"
+                        : "text-white/12"
                   )}
                 >
                   {day}
@@ -1206,18 +1380,17 @@ function Visual11() {
             })}
           </div>
 
-          {/* Selected time slots */}
-          <div className="mt-4 pt-4 border-t border-white/[0.08]">
-            <p className="text-[11px] font-medium text-white/40 mb-2">Available times</p>
-            <div className="flex gap-2 flex-wrap">
-              {["10:00", "11:30", "14:00", "15:30", "17:00"].map((time, i) => (
+          {/* Time slots */}
+          <div className="mt-4 pt-3.5 border-t border-white/[0.06]">
+            <div className="flex gap-1.5">
+              {["10:00", "11:30", "14:00", "15:30"].map((time, i) => (
                 <div
                   key={time}
                   className={cn(
-                    "rounded-lg px-3 py-1.5 text-[11px] font-medium",
+                    "flex-1 rounded-md py-1.5 text-[10px] font-medium text-center",
                     i === 2
                       ? "bg-white text-[#0a0a0a]"
-                      : "bg-white/[0.06] text-white/50"
+                      : "bg-white/[0.06] text-white/40"
                   )}
                 >
                   {time}
@@ -1227,7 +1400,7 @@ function Visual11() {
           </div>
 
           {/* Book button */}
-          <button className="w-full h-[44px] rounded-xl bg-white text-[14px] font-semibold text-[#0a0a0a] mt-4 transition-all active:scale-[0.98]">
+          <button className="w-full h-[38px] rounded-xl bg-white text-[13px] font-semibold text-[#0a0a0a] mt-3.5 transition-all active:scale-[0.98]">
             Book a Call
           </button>
         </div>
@@ -1237,9 +1410,17 @@ function Visual11() {
 }
 
 const cardVisuals = [
-  Visual1, Visual2, Visual3, Visual4,
-  Visual5, Visual6, Visual7,
-  Visual8, Visual9, Visual10, Visual11,
+  Visual1,  // 0: SDK (W)
+  Visual2,  // 1: Settlement (W)
+  Visual3,  // 2: Gas (B)
+  Visual5,  // 3: Wallets (W)
+  Visual7,  // 4: Books (W)
+  Visual6,  // 5: Security (B)
+  Visual8,  // 6: Support (W)
+  Visual10, // 7: Checkout (W)
+  Visual4,  // 8: Crypto (B)
+  Visual9,  // 9: Pay (W)
+  Visual11, // 10: CTA (B)
 ];
 
 /* ── Card data ──────────────────────────────────────────────────── */
@@ -1255,67 +1436,67 @@ interface CardData {
 }
 
 const cards: CardData[] = [
-  {
+  /* 0  W */ {
     title: "Drop in our SDK. Go live in days.",
     body: "A few lines of code. Sandbox to production. No blockchain expertise needed.",
     variant: "default",
     layout: "left",
   },
-  {
+  /* 1  W */ {
     title: "Instant settlement in fiat.",
     body: "Every crypto payment converts and settles to your bank account the same day.",
     variant: "default",
     layout: "right",
   },
-  {
+  /* 2  B */ {
     title: "Zero gas fees for your customers.",
     body: "They approve. We handle the rest. No wallet gymnastics.",
-    variant: "muted",
+    variant: "contrast",
     layout: "center",
   },
-  {
-    title: "They pay crypto. You get dollars.",
-    body: "Automatic conversion. No volatility exposure. No crypto on your books.",
-    variant: "default",
-    layout: "center",
-  },
-  {
+  /* 3  W */ {
     title: "Every wallet. Every network.",
     body: "Customers pay from the wallet they already use, on the chain they already hold tokens.",
     variant: "default",
     layout: "left",
   },
-  {
-    title: "Crypto security is hard. Your payments shouldn\u2019t be.",
-    body: "Safety and security are our key priorities. Immutable settlement. No chargebacks, no disputes, no money walking back out the door.",
-    variant: "contrast",
-    layout: "center",
-  },
-  {
+  /* 4  W */ {
     title: "Crypto never touches your books.",
     body: "We\u2019re settlement infrastructure. You receive fiat, same as any other payment method.",
     variant: "default",
     layout: "left",
   },
-  {
+  /* 5  B */ {
+    title: "Crypto security is hard. Your payments shouldn\u2019t be.",
+    body: "Safety and security are our key priorities. Immutable settlement. No chargebacks, no disputes, no money walking back out the door.",
+    variant: "contrast",
+    layout: "center",
+  },
+  /* 6  W */ {
     title: "Support means engineers, not tickets.",
     body: "You talk to the people who built it. Not a chatbot, not a queue.",
     variant: "default",
     layout: "right",
   },
-  {
-    title: "Every way to pay.",
-    body: "Wallet connect, QR code, or direct link. One integration covers all of them.",
-    variant: "contrast",
-    layout: "center",
-  },
-  {
+  /* 7  W */ {
     title: "Checkout in two taps.",
     body: "The entire flow lives inside the payment button. No redirects, no forms.",
     variant: "default",
     layout: "center",
   },
-  {
+  /* 8  B */ {
+    title: "They pay crypto. You get dollars.",
+    body: "Automatic conversion. No volatility exposure. No crypto on your books.",
+    variant: "contrast",
+    layout: "center",
+  },
+  /* 9  W */ {
+    title: "Every way to pay.",
+    body: "Wallet connect, QR code, or direct link. One integration covers all of them.",
+    variant: "default",
+    layout: "center",
+  },
+  /* 10 B */ {
     title: "Questions shouldn\u2019t drag on.",
     body: "Book a call, talk to the team, get clear answers.",
     variant: "contrast",
@@ -1350,7 +1531,9 @@ function FeatureCard({
   const dark = card.variant === "contrast";
   const isSecurityCard = i === 5;
   const isGaslessCard = i === 2;
-  const isPayCard = i === 8;
+  const isCryptoCard = i === 8;
+  const isPayCard = i === 9;
+  const isCheckoutCard = i === 7;
 
   return (
     <div className="flex items-center justify-center sticky top-[80px] h-screen max-h-[720px] min-h-[500px]">
@@ -1363,8 +1546,12 @@ function FeatureCard({
       >
         {isSecurityCard ? (
           <Visual6SecurityCard title={card.title} body={card.body} />
+        ) : isCheckoutCard ? (
+          <Visual10CheckoutCard title={card.title} body={card.body} />
         ) : isPayCard ? (
           <Visual9PayCard title={card.title} body={card.body} />
+        ) : isCryptoCard ? (
+          <Visual4CryptoCard title={card.title} body={card.body} />
         ) : isGaslessCard ? (
           <Visual3GaslessCard title={card.title} body={card.body} />
         ) : (

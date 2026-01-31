@@ -1,94 +1,67 @@
 export function Footer() {
   return (
-    <footer className="mt-32 bg-[#0a0a0a] text-white px-6 md:px-10 lg:px-20" style={{ borderRadius: "42px 42px 0 0" }}>
-      <div className="mx-auto max-w-[1360px] pt-20 pb-10 md:pt-32 md:pb-14 lg:pt-40 lg:pb-16">
-        {/* Grid */}
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-5">
-          {/* Brand */}
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-2.5 mb-6">
-              <div className="h-7 w-7 rounded-lg bg-white flex items-center justify-center">
-                <svg width="13" height="13" viewBox="0 0 28 28" fill="none">
-                  <path d="M8 14.5C8 11 10.5 8 14 8s6 3 6 6.5-2.5 5.5-6 5.5" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" />
-                  <circle cx="14" cy="14.5" r="2" fill="#0a0a0a" />
-                </svg>
-              </div>
-              <span className="text-[15px] font-semibold tracking-[-0.02em]">SpacePay</span>
+    <footer className="mt-[30vh] bg-[#eef4fb] pt-20 lg:pt-28 px-6 md:px-10 lg:px-20 pb-16 md:pb-20">
+      <div className="mx-auto max-w-[1360px]">
+        {/* Main footer grid — two link cols left, big tagline right */}
+        <div className="flex flex-col lg:flex-row gap-16 lg:gap-0 lg:justify-center lg:px-[8%]">
+          {/* Left side — link columns */}
+          <div className="flex gap-20 lg:gap-28">
+            {/* Column 1 */}
+            <div>
+              <h3 className="mb-6 text-[14px] font-semibold text-[#0a0a0a]">
+                Learn more
+              </h3>
+              <ul className="space-y-4">
+                {["FAQ", "Security", "Legal", "Pricing"].map((l) => (
+                  <li key={l}>
+                    <a href={`#${l.toLowerCase()}`} className="text-[15px] font-medium text-[#0a0a0a] hover:opacity-40 transition-opacity">
+                      {l}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <p className="max-w-[260px] text-[14px] leading-[1.7] text-white/30">
-              Crypto payments for businesses. Accept any token, receive fiat. No complexity.
+
+            {/* Column 2 */}
+            <div>
+              <h3 className="mb-6 text-[14px] font-semibold text-[#0a0a0a]">
+                Connect
+              </h3>
+              <ul className="space-y-4">
+                <li>
+                  <a href="https://x.com/spacepay" target="_blank" rel="noopener noreferrer" className="hover:opacity-40 transition-opacity inline-block">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="#0a0a0a"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="text-[15px] font-medium text-[#0a0a0a] hover:opacity-40 transition-opacity">
+                    Support
+                  </a>
+                </li>
+                <li>
+                  <a href="mailto:hello@spacepay.co.uk" className="text-[15px] font-medium text-[#0a0a0a] hover:opacity-40 transition-opacity">
+                    Contact us
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Right side — big tagline */}
+          <div className="lg:ml-auto flex items-start justify-start lg:justify-end">
+            <p className="text-[clamp(32px,4vw,56px)] font-bold text-[#0a0a0a] leading-[1.05] tracking-[-0.035em]">
+              Your payments.<br />Your way.
             </p>
-          </div>
-
-          {/* Learn more */}
-          <div>
-            <h3 className="mb-5 text-[11px] font-medium uppercase tracking-[0.12em] text-white/25">
-              Product
-            </h3>
-            <ul className="space-y-3">
-              {["Features", "Pricing", "Documentation", "Changelog"].map((l) => (
-                <li key={l}>
-                  <a href={`#${l.toLowerCase()}`} className="text-[14px] text-white/40 hover:text-white transition-colors">
-                    {l}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Support */}
-          <div>
-            <h3 className="mb-5 text-[11px] font-medium uppercase tracking-[0.12em] text-white/25">
-              Company
-            </h3>
-            <ul className="space-y-3">
-              {["Security", "Legal", "Privacy"].map((l) => (
-                <li key={l}>
-                  <a href={`#${l.toLowerCase()}`} className="text-[14px] text-white/40 hover:text-white transition-colors">
-                    {l}
-                  </a>
-                </li>
-              ))}
-              <li>
-                <a href="mailto:support@spacepay.com" className="text-[14px] text-white/40 hover:text-white transition-colors">
-                  Contact
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Social */}
-          <div>
-            <h3 className="mb-5 text-[11px] font-medium uppercase tracking-[0.12em] text-white/25">
-              Connect
-            </h3>
-            <ul className="space-y-3">
-              <li>
-                <a href="https://x.com/spacepay" target="_blank" rel="noopener noreferrer" className="text-[14px] text-white/40 hover:text-white transition-colors">
-                  X / Twitter
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-[14px] text-white/40 hover:text-white transition-colors">
-                  GitHub
-                </a>
-              </li>
-              <li>
-                <a href="#" className="text-[14px] text-white/40 hover:text-white transition-colors">
-                  Discord
-                </a>
-              </li>
-            </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-white/[0.06] pt-8 md:flex-row">
-          <p className="text-[12px] text-white/20">
-            &copy; {new Date().getFullYear()} SpacePay
+        {/* Legal text — big gap then small print */}
+        <div className="mt-[20vh] lg:mt-[25vh] space-y-4 lg:px-[8%]">
+          <p className="text-[11px] leading-[1.7] text-[#0a0a0a]/25 max-w-[680px]">
+            SpacePay Ltd, registered in the United Kingdom. SpacePay provides crypto payment processing services for businesses on a non-custodial basis.
           </p>
-          <p className="text-[12px] text-white/20">
-            Settlement infrastructure for crypto payments.
+          <p className="text-[11px] leading-[1.7] text-[#0a0a0a]/25 max-w-[680px]">
+            SpacePay does not hold or control customer crypto-assets or private keys. All fiat settlement is provided by SpacePay&apos;s licensed banking and payment service partners.
           </p>
         </div>
       </div>
