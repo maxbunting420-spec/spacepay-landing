@@ -440,22 +440,31 @@ function Visual5() {
                 />
               </div>
             ) : (
-              /* Circular logos that ARE the full circle — render as the circle itself */
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={b.img}
-                alt={b.name}
+              /* Circular logos — scale up so the inner circle fills the clipped container */
+              <div
                 style={{
-                  width: "100%",
-                  height: "100%",
                   borderRadius: "50%",
                   boxShadow: "0 8px 30px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.04)",
-                  objectFit: "cover",
+                  width: "100%",
+                  height: "100%",
                   position: "absolute",
                   top: 0,
                   left: 0,
+                  overflow: "hidden",
                 }}
-              />
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={b.img}
+                  alt={b.name}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    transform: "scale(1.18)",
+                  }}
+                />
+              </div>
             )}
           </div>
         ))}
