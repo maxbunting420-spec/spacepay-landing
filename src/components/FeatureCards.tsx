@@ -558,6 +558,7 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
   const targetRef = useRef<HTMLDivElement>(null);
   const hasTriggered = useRef(false);
   const [scrambleNow, setScrambleNow] = React.useState(false);
+  const [locked, setLocked] = React.useState(false);
 
   const displayChars = useScrambleText(title, scrambleNow);
 
@@ -579,15 +580,24 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
     return () => observer.disconnect();
   }, []);
 
-  // Lottie complete → trigger scramble
+  // Lottie complete → trigger scramble + turn lock Sui blue
   const onLottieComplete = React.useCallback(() => {
     setScrambleNow(true);
+    setLocked(true);
   }, []);
 
   return (
     <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
-      {/* Lottie lock — 120px, inverted to white for dark card */}
-      <div className="mb-4 flex-shrink-0 invert">
+      {/* Lottie lock — 120px, white initially, transitions to Sui blue on lock */}
+      <div
+        className="mb-4 flex-shrink-0"
+        style={{
+          filter: locked
+            ? "brightness(0) saturate(100%) invert(58%) sepia(52%) saturate(1041%) hue-rotate(185deg) brightness(103%) contrast(101%)"
+            : "invert(1)",
+          transition: "filter 0.6s ease",
+        }}
+      >
         <Lottie
           lottieRef={lottieRef}
           animationData={lockAnimationData}
