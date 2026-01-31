@@ -130,63 +130,14 @@ export function SpacePayHero() {
           }}
         />
 
-        {/* Content — centered */}
-        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center gap-6">
-          {/* 3D Glowing SP logo on pedestal */}
-          <motion.div
-            className="relative"
-            style={{ perspective: "800px" }}
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0, duration: 1, ease }}
-          >
-            {/* Logo with glow */}
-            <div
-              style={{
-                transform: "rotateX(8deg)",
-                transformOrigin: "center bottom",
-              }}
-            >
-              <img
-                src="/logos/sp-logo.svg"
-                alt="SpacePay"
-                style={{
-                  width: "clamp(120px, 18vw, 200px)",
-                  height: "auto",
-                  filter: "drop-shadow(0 0 40px rgba(77,162,255,0.6)) drop-shadow(0 0 80px rgba(77,162,255,0.3))",
-                  animation: "glow-pulse 4s ease-in-out infinite",
-                }}
-              />
-            </div>
-            {/* Reflection */}
-            <div
-              style={{
-                marginTop: "4px",
-                transform: "rotateX(8deg) scaleY(-1)",
-                transformOrigin: "center top",
-                maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 50%)",
-                WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 50%)",
-                filter: "blur(6px)",
-                pointerEvents: "none",
-              }}
-            >
-              <img
-                src="/logos/sp-logo.svg"
-                alt=""
-                style={{
-                  width: "clamp(120px, 18vw, 200px)",
-                  height: "auto",
-                }}
-              />
-            </div>
-          </motion.div>
-
+        {/* Content — bottom center */}
+        <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6">
           <motion.h1
             className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[0.95]"
             style={{ fontSize: "clamp(48px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, duration: 0.8, ease }}
+            transition={{ delay: 0.06, duration: 0.8, ease }}
           >
             Effortless Crypto
             <br />
@@ -197,7 +148,7 @@ export function SpacePayHero() {
             className="text-lg font-medium text-[#94a3b8] text-center max-w-[440px]"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.25, duration: 0.8, ease }}
+            transition={{ delay: 0.12, duration: 0.8, ease }}
           >
             Accept crypto payments from any wallet. Receive fiat same-day. Zero gas fees for your customers.
           </motion.p>
