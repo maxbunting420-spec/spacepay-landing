@@ -350,17 +350,17 @@ function Visual5() {
 
   return (
     <div className="absolute inset-0 overflow-hidden">
-      {/* White gradient fading left edge — only on mobile to blend into stacked text */}
+      {/* White gradient fading bottom edge — blend toggle into card */}
       <div
-        className="absolute inset-0 z-10 pointer-events-none lg:hidden"
+        className="absolute bottom-0 left-0 right-0 h-24 z-10 pointer-events-none"
         style={{
-          background: "linear-gradient(180deg, #fff 0%, rgba(255,255,255,0) 30%)",
+          background: "linear-gradient(180deg, rgba(255,255,255,0) 0%, #fff 100%)",
         }}
       />
 
-      {/* Pill toggle — top of visual area */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2 z-20">
-        <div className="flex h-[36px] rounded-full bg-[#f0f0f0] p-[3px]">
+      {/* Pill toggle — bottom-center on the visual */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20">
+        <div className="flex h-[36px] rounded-full bg-[#f0f0f0] p-[3px] shadow-[0_2px_12px_rgba(0,0,0,0.08)]">
           <button
             onClick={() => setTab("wallets")}
             className={cn(
