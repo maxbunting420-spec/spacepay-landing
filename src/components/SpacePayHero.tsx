@@ -34,9 +34,10 @@ export function SpacePayHero() {
           background: linear-gradient(
             97deg,
             #0a0a0a 0%,
-            #0a0a0a 40%,
-            #a8d4f5 50%,
-            #0a0a0a 60%,
+            #0a0a0a 25%,
+            #a8d4f5 45%,
+            #a8d4f5 55%,
+            #0a0a0a 75%,
             #0a0a0a 100%
           );
           background-size: 200% 100%;
