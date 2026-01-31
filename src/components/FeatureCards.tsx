@@ -320,32 +320,32 @@ function Visual4CryptoCard({ title, body }: { title: string; body: string }) {
 function Visual5() {
   const [tab, setTab] = React.useState<"wallets" | "networks">("wallets");
 
-  /* bg = circle background color matching the logo's edge color so
-     transparent PNG pixels blend seamlessly. iconScale < 100 for
-     transparent-bg icons that need to sit inside the circle. */
-  type Bubble = { name: string; img: string; size: number; top: string; left: string; dur: number; bg: string; iconScale?: number };
+  /* iconScale = logo sits inside a colored circle container (e.g. MetaMask on white).
+     imgScale  = how much to scale the circular PNG so it fills the clipped container
+                 (square logos like WalletConnect/Rainbow/Gnosis = 1, padded circles ~1.06-1.10). */
+  type Bubble = { name: string; img: string; size: number; top: string; left: string; dur: number; bg: string; iconScale?: number; imgScale?: number };
 
   const walletBubbles: Bubble[] = [
     { name: "MetaMask", img: "/logos/wallets/metamask.png", size: 164, top: "2%", left: "12%", dur: 9, bg: "#ffffff", iconScale: 70 },
-    { name: "Coinbase", img: "/logos/wallets/coinbase.png", size: 120, top: "0%", left: "62%", dur: 11, bg: "#2458e4" },
-    { name: "Rabby", img: "/logos/wallets/rabby.svg", size: 80, top: "32%", left: "2%", dur: 7, bg: "#8697FF" },
-    { name: "Phantom", img: "/logos/wallets/phantom.png", size: 100, top: "30%", left: "50%", dur: 10, bg: "#551fba" },
-    { name: "WalletConnect", img: "/logos/wallets/walletconnect.png", size: 40, top: "24%", left: "38%", dur: 8, bg: "#333333" },
-    { name: "Rainbow", img: "/logos/wallets/rainbow.png", size: 80, top: "54%", left: "70%", dur: 12, bg: "#001e59" },
-    { name: "Safe", img: "/logos/wallets/safe.png", size: 120, top: "52%", left: "8%", dur: 9, bg: "#12FF80" },
+    { name: "Coinbase", img: "/logos/wallets/coinbase.png", size: 120, top: "0%", left: "62%", dur: 11, bg: "#2458e4", imgScale: 1.06 },
+    { name: "Rabby", img: "/logos/wallets/rabby.svg", size: 80, top: "32%", left: "2%", dur: 7, bg: "#8697FF", imgScale: 1.0 },
+    { name: "Phantom", img: "/logos/wallets/phantom.png", size: 100, top: "30%", left: "50%", dur: 10, bg: "#551fba", imgScale: 1.06 },
+    { name: "WalletConnect", img: "/logos/wallets/walletconnect.png", size: 40, top: "24%", left: "38%", dur: 8, bg: "#333333", imgScale: 1.0 },
+    { name: "Rainbow", img: "/logos/wallets/rainbow.png", size: 80, top: "54%", left: "70%", dur: 12, bg: "#001e59", imgScale: 1.0 },
+    { name: "Safe", img: "/logos/wallets/safe.png", size: 120, top: "52%", left: "8%", dur: 9, bg: "#12FF80", imgScale: 1.06 },
     { name: "Brave", img: "/logos/wallets/brave.png", size: 100, top: "72%", left: "48%", dur: 8, bg: "#ffffff", iconScale: 70 },
-    { name: "Zerion", img: "/logos/wallets/zerion.svg", size: 64, top: "78%", left: "4%", dur: 7, bg: "#2962EF" },
+    { name: "Zerion", img: "/logos/wallets/zerion.svg", size: 64, top: "78%", left: "4%", dur: 7, bg: "#2962EF", imgScale: 1.0 },
   ];
 
   const networkBubbles: Bubble[] = [
-    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#213147" },
-    { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, bg: "#0052FF" },
-    { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, bg: "#0d1623" },
-    { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, bg: "#8247e5" },
+    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#213147", imgScale: 1.02 },
+    { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, bg: "#0052FF", imgScale: 1.06 },
+    { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, bg: "#0d1623", imgScale: 1.0 },
+    { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, bg: "#8247e5", imgScale: 1.08 },
     { name: "Ethereum", img: "/logos/networks/ethereum.png", size: 80, top: "50%", left: "58%", dur: 7, bg: "#ffffff", iconScale: 65 },
-    { name: "BNB Chain", img: "/logos/networks/bnb.png", size: 80, top: "58%", left: "2%", dur: 8, bg: "#f0b90b" },
-    { name: "Optimism", img: "/logos/networks/optimism.png", size: 100, top: "60%", left: "34%", dur: 12, bg: "#ff0420" },
-    { name: "Avalanche", img: "/logos/networks/avalanche.png", size: 80, top: "76%", left: "12%", dur: 9, bg: "#e84142" },
+    { name: "BNB Chain", img: "/logos/networks/bnb.png", size: 80, top: "58%", left: "2%", dur: 8, bg: "#f0b90b", imgScale: 1.08 },
+    { name: "Optimism", img: "/logos/networks/optimism.png", size: 100, top: "60%", left: "34%", dur: 12, bg: "#ff0420", imgScale: 1.10 },
+    { name: "Avalanche", img: "/logos/networks/avalanche.png", size: 80, top: "76%", left: "12%", dur: 9, bg: "#e84142", imgScale: 1.08 },
     { name: "Solana", img: "/logos/networks/solana.png", size: 120, top: "72%", left: "52%", dur: 10, bg: "#ffffff", iconScale: 65 },
   ];
 
@@ -461,7 +461,7 @@ function Visual5() {
                     width: "100%",
                     height: "100%",
                     objectFit: "cover",
-                    transform: "scale(1.18)",
+                    transform: `scale(${b.imgScale ?? 1.06})`,
                   }}
                 />
               </div>
