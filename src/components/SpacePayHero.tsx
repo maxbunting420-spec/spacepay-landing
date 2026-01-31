@@ -22,6 +22,28 @@ export function SpacePayHero() {
         .sp-spin-slow-rev {
           animation: sp-spin-slow-rev 60s linear infinite;
         }
+        @keyframes hero-color-flow {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .hero-gradient-text {
+          background: linear-gradient(
+            97deg,
+            #0a0a0a 0%,
+            #6ba3cc 20%,
+            #a8d4f5 40%,
+            #d6e8f7 55%,
+            #a8d4f5 70%,
+            #6ba3cc 85%,
+            #0a0a0a 100%
+          );
+          background-size: 300% 100%;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: hero-color-flow 6s ease-in-out infinite;
+        }
       `}</style>
 
       <div
@@ -110,14 +132,15 @@ export function SpacePayHero() {
         {/* Content — bottom center */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6">
           <motion.h1
-            className="text-5xl md:text-6xl font-bold text-center tracking-tight text-[#0a0a0a]"
+            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[0.95]"
+            style={{ fontSize: "clamp(48px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.06, duration: 0.8, ease }}
           >
-            One checkout
+            Effortless Crypto
             <br />
-            for all crypto.
+            Commerce.
           </motion.h1>
 
           <motion.p

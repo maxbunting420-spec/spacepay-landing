@@ -1320,8 +1320,8 @@ function Visual10() {
   return null;
 }
 
-/* 11: CTA — dramatic booking card with Calendly integration.
-   Replace CALENDLY_URL with your actual Calendly scheduling link. */
+/* 11: CTA — "Effortless Crypto Commerce" with Climatise-style flowing
+   gradient text using SpacePay brand blues + inline Calendly embed. */
 const CALENDLY_URL = "https://calendly.com/spacepay/spacepay-meeting";
 const V11_CSS_ID = "v11-cta-css";
 
@@ -1332,15 +1332,13 @@ function Visual11() {
 function Visual11CalendarCard({ title, body }: { title: string; body: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
-  const [showCalendly, setShowCalendly] = React.useState(false);
-  const [btnHover, setBtnHover] = React.useState(false);
 
   React.useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const observer = new IntersectionObserver(
       ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.3 }
+      { threshold: 0.15 }
     );
     observer.observe(el);
     return () => observer.disconnect();
@@ -1353,186 +1351,103 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
     const s = document.createElement("style");
     s.id = V11_CSS_ID;
     s.textContent = `
-      @keyframes v11pulse {
-        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
-        50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.8; }
+      @keyframes v11colorFlow {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
       }
-      @keyframes v11ring {
-        0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-        40% { opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+      @keyframes v11glowPulse {
+        0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(1); }
+        50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.08); }
       }
-      @keyframes v11fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
+      .v11-gradient-text {
+        background: linear-gradient(
+          97deg,
+          #ffffff 0%,
+          #d6e8f7 18%,
+          #a8d4f5 35%,
+          #daedf9 55%,
+          #e8f2fb 75%,
+          #ffffff 100%
+        );
+        background-size: 300% 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: v11colorFlow 6s ease-in-out infinite;
       }
-      .v11-overlay {
-        position: fixed; inset: 0; z-index: 9999;
-        background: rgba(0,0,0,0.8); backdrop-filter: blur(12px);
-        display: flex; align-items: center; justify-content: center;
-        animation: v11fadeIn 0.3s ease-out;
+      .v11-calendly-wrap {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.02);
       }
-      .v11-modal {
-        width: calc(100% - 32px); max-width: 900px; height: 85vh; max-height: 780px;
-        border-radius: 28px; overflow: hidden; position: relative;
-        background: #0a0a0a; border: 1px solid rgba(255,255,255,0.06);
-        box-shadow: 0 60px 160px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.04);
+      .v11-calendly-wrap iframe {
+        border: none !important;
       }
-      .v11-modal iframe { border: none !important; }
-      .v11-close {
-        position: absolute; top: 16px; right: 16px; z-index: 10;
-        width: 40px; height: 40px; border-radius: 50%;
-        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.06);
-        display: flex; align-items: center; justify-content: center;
-        cursor: pointer; transition: all 0.2s;
-      }
-      .v11-close:hover { background: rgba(255,255,255,0.15); }
     `;
     document.head.appendChild(s);
     injected.current = true;
   }, []);
 
   return (
-    <>
+    <div
+      ref={containerRef}
+      className="flex flex-col min-h-[420px] md:min-h-[520px] lg:min-h-[640px] relative overflow-hidden"
+    >
+      {/* Ambient glow — brand blue, behind the headline */}
       <div
-        ref={containerRef}
-        className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative overflow-hidden"
+        className="absolute pointer-events-none"
+        style={{
+          width: 1000, height: 500,
+          top: "18%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          borderRadius: "50%",
+          background: "radial-gradient(ellipse, rgba(168,212,245,0.06) 0%, rgba(214,232,247,0.02) 50%, transparent 70%)",
+          animation: visible ? "v11glowPulse 5s ease-in-out infinite" : "none",
+        }}
+      />
+
+      {/* Title + body */}
+      <div
+        className="flex flex-col items-center text-center px-8 md:px-16 lg:px-20 pt-12 md:pt-16 lg:pt-20 relative z-10"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(28px)",
+          transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
+        }}
       >
-        {/* Layered ambient glows */}
-        <div
-          className="absolute pointer-events-none"
-          style={{
-            width: 700, height: 700,
-            top: "50%", left: "50%",
-            transform: "translate(-50%, -50%)",
-            borderRadius: "50%",
-            background: "radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%)",
-            animation: visible ? "v11pulse 5s ease-in-out infinite" : "none",
-          }}
-        />
-
-        {/* Body text — above title */}
-        <p
-          className="text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[480px] mb-5"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(16px)",
-            transition: "all 0.8s cubic-bezier(0.16,1,0.3,1) 0.05s",
-          }}
-        >
-          {body}
-        </p>
-
-        {/* Big title */}
         <h2
-          className="font-bold leading-[1] tracking-[-0.04em] text-white max-w-[600px] relative z-10"
-          style={{
-            fontSize: "clamp(36px, 5.5vw, 64px)",
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.9s cubic-bezier(0.16,1,0.3,1) 0.15s",
-          }}
+          className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
+          style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
         >
           {title}
         </h2>
 
-        {/* CTA button — the hero element */}
-        <div
-          className="mt-10 relative z-10"
-          style={{
-            opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0) scale(1)" : "translateY(24px) scale(0.95)",
-            transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.35s",
-          }}
-        >
-          {/* Pulsing rings behind button */}
-          <div className="absolute inset-0 pointer-events-none">
-            {[0, 1, 2].map((i) => (
-              <div
-                key={i}
-                className="absolute top-1/2 left-1/2 rounded-full"
-                style={{
-                  width: 200, height: 200,
-                  border: "1px solid rgba(255,255,255,0.04)",
-                  animation: visible ? `v11ring 3s ease-out ${i * 0.8}s infinite` : "none",
-                }}
-              />
-            ))}
-          </div>
-
-          <button
-            onClick={() => setShowCalendly(true)}
-            onMouseEnter={() => setBtnHover(true)}
-            onMouseLeave={() => setBtnHover(false)}
-            className="relative group"
-          >
-            {/* Glow behind button */}
-            <div
-              className="absolute -inset-4 rounded-3xl transition-all duration-500 pointer-events-none"
-              style={{
-                background: btnHover
-                  ? "radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)"
-                  : "radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)",
-              }}
-            />
-            <div
-              className="relative flex items-center gap-3 rounded-2xl px-10 py-5 transition-all duration-300"
-              style={{
-                background: btnHover
-                  ? "rgba(255,255,255,1)"
-                  : "rgba(255,255,255,0.95)",
-                boxShadow: btnHover
-                  ? "0 8px 40px rgba(255,255,255,0.15), 0 0 0 1px rgba(255,255,255,0.2)"
-                  : "0 4px 24px rgba(255,255,255,0.06), 0 0 0 1px rgba(255,255,255,0.1)",
-                transform: btnHover ? "scale(1.03)" : "scale(1)",
-              }}
-            >
-              {/* Calendar icon */}
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="4" width="18" height="18" rx="2" />
-                <path d="M16 2v4M8 2v4M3 10h18" />
-                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01" />
-              </svg>
-              <span className="text-[17px] font-semibold text-[#0a0a0a] tracking-[-0.02em]">
-                Book a Call
-              </span>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0a0a0a" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="ml-1 transition-transform duration-300 group-hover:translate-x-0.5">
-                <path d="M5 12h14M12 5l7 7-7 7" />
-              </svg>
-            </div>
-          </button>
-        </div>
-
-        {/* Subtle helper text */}
-        <p
-          className="mt-6 text-[13px] text-white/20 relative z-10"
-          style={{
-            opacity: visible ? 1 : 0,
-            transition: "opacity 0.8s ease 0.6s",
-          }}
-        >
-          30 min · No commitment · Talk to the founders
+        <p className="mt-5 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[400px]">
+          {body}
         </p>
       </div>
 
-      {/* Calendly modal */}
-      {showCalendly && (
-        <div className="v11-overlay" onClick={() => setShowCalendly(false)}>
-          <div className="v11-modal" onClick={(e) => e.stopPropagation()}>
-            <button className="v11-close" onClick={() => setShowCalendly(false)}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="2" strokeLinecap="round">
-                <path d="M18 6L6 18M6 6l12 12" />
-              </svg>
-            </button>
-            <iframe
-              src={`${CALENDLY_URL}?hide_gdpr_banner=1&background_color=0a0a0a&text_color=ffffff&primary_color=ffffff`}
-              title="Book a call with SpacePay"
-              style={{ width: "100%", height: "100%", border: "none" }}
-            />
-          </div>
+      {/* Calendly inline — real booking, embedded right in the card */}
+      <div
+        className="flex-1 flex items-start justify-center px-5 md:px-10 lg:px-14 pt-6 pb-8 md:pb-10 relative z-10"
+        style={{
+          opacity: visible ? 1 : 0,
+          transform: visible ? "translateY(0)" : "translateY(20px)",
+          transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.25s",
+        }}
+      >
+        <div className="v11-calendly-wrap w-full" style={{ maxWidth: 740, height: 320 }}>
+          <iframe
+            src={`${CALENDLY_URL}?hide_gdpr_banner=1&hide_landing_page_details=1&background_color=0a0a0a&text_color=ffffff&primary_color=a8d4f5`}
+            title="Book a call with SpacePay"
+            style={{ width: "100%", height: "100%", border: "none" }}
+            loading="lazy"
+          />
         </div>
-      )}
-    </>
+      </div>
+    </div>
   );
 }
 
