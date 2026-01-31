@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 160" fill="white">
+  <!-- S letter -->
+  <!-- Top bar of S -->
+  <rect x="10" y="0" width="70" height="28" rx="6"/>
+  <!-- Middle bar of S -->
+  <rect x="10" y="66" width="70" height="28" rx="6"/>
+  <!-- Bottom bar of S -->
+  <rect x="10" y="132" width="70" height="28" rx="6"/>
+  <!-- S left vertical (top half) -->
+  <rect x="10" y="0" width="28" height="94" rx="6"/>
+  <!-- S right vertical (bottom half) -->
+  <rect x="52" y="66" width="28" height="94" rx="6"/>
+
+  <!-- P letter -->
+  <!-- P vertical bar (full height) -->
+  <rect x="100" y="0" width="28" height="160" rx="6"/>
+  <!-- P top bar -->
+  <rect x="100" y="0" width="90" height="28" rx="6"/>
+  <!-- P middle bar -->
+  <rect x="100" y="66" width="90" height="28" rx="6"/>
+  <!-- P right vertical (top section) -->
+  <rect x="162" y="0" width="28" height="94" rx="6"/>
+</svg>
