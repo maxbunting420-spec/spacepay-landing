@@ -338,7 +338,7 @@ function Visual5() {
   ];
 
   const networkBubbles: Bubble[] = [
-    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#213147", imgScale: 1.02 },
+    { name: "Arbitrum", img: "/logos/networks/arbitrum.png", size: 164, top: "1%", left: "38%", dur: 10, bg: "#213147", imgScale: 1.0 },
     { name: "Base", img: "/logos/networks/base.png", size: 100, top: "4%", left: "2%", dur: 8, bg: "#0052FF", imgScale: 1.06 },
     { name: "Gnosis", img: "/logos/networks/gnosis.png", size: 100, top: "26%", left: "66%", dur: 9, bg: "#0d1623", imgScale: 1.0 },
     { name: "Polygon", img: "/logos/networks/polygon.png", size: 120, top: "34%", left: "6%", dur: 11, bg: "#8247e5", imgScale: 1.08 },
