@@ -133,7 +133,7 @@ export function SpacePayHero() {
         {/* Content — bottom center */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-end pb-24 gap-6 px-6">
           <motion.h1
-            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[1]"
+            className="hero-gradient-text font-bold text-center tracking-[-0.04em] leading-[1.1] py-2"
             style={{ fontSize: "clamp(44px, 8vw, 96px)" }}
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
