@@ -433,10 +433,10 @@ function Visual5() {
                   src={b.img}
                   alt={b.name}
                   style={{
-                    objectFit: "cover",
-                    width: `${b.iconScale}%`,
-                    height: `${b.iconScale}%`,
-                    borderRadius: "50%",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    transform: `scale(${(b.iconScale ?? 100) / 100})`,
                   }}
                 />
               </div>
