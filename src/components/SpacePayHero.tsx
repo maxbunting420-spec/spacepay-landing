@@ -132,7 +132,7 @@ export function SpacePayHero() {
 
         {/* Content — centered */}
         <div className="relative z-20 w-full h-full flex flex-col items-center justify-center gap-6">
-          {/* 3D Glowing SpacePay logo on pedestal */}
+          {/* 3D Glowing SP logo on pedestal */}
           <motion.div
             className="relative"
             style={{ perspective: "800px" }}
@@ -148,14 +148,12 @@ export function SpacePayHero() {
               }}
             >
               <img
-                src="/logos/spacepay.png"
+                src="/logos/sp-logo.svg"
                 alt="SpacePay"
                 style={{
-                  width: "clamp(100px, 14vw, 140px)",
-                  height: "clamp(100px, 14vw, 140px)",
-                  borderRadius: "28%",
-                  boxShadow:
-                    "0 0 60px rgba(77,162,255,0.45), 0 0 120px rgba(77,162,255,0.2), 0 20px 60px rgba(0,0,0,0.15)",
+                  width: "clamp(120px, 18vw, 200px)",
+                  height: "auto",
+                  filter: "drop-shadow(0 0 40px rgba(77,162,255,0.6)) drop-shadow(0 0 80px rgba(77,162,255,0.3))",
                   animation: "glow-pulse 4s ease-in-out infinite",
                 }}
               />
@@ -163,22 +161,21 @@ export function SpacePayHero() {
             {/* Reflection */}
             <div
               style={{
-                marginTop: "2px",
+                marginTop: "4px",
                 transform: "rotateX(8deg) scaleY(-1)",
                 transformOrigin: "center top",
-                maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 60%)",
-                WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.18) 0%, transparent 60%)",
-                filter: "blur(4px)",
+                maskImage: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 50%)",
+                WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 50%)",
+                filter: "blur(6px)",
                 pointerEvents: "none",
               }}
             >
               <img
-                src="/logos/spacepay.png"
+                src="/logos/sp-logo.svg"
                 alt=""
                 style={{
-                  width: "clamp(100px, 14vw, 140px)",
-                  height: "clamp(100px, 14vw, 140px)",
-                  borderRadius: "28%",
+                  width: "clamp(120px, 18vw, 200px)",
+                  height: "auto",
                 }}
               />
             </div>
