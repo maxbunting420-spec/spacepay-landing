@@ -1400,14 +1400,36 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
         background-clip: text;
         animation: v11colorFlow 6s ease-in-out infinite;
       }
-      .v11-calendly-wrap {
-        border-radius: 16px;
-        overflow: hidden;
-        border: 1px solid rgba(255,255,255,0.06);
-        background: rgba(255,255,255,0.02);
+      .v11-cta-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 16px 36px;
+        border-radius: 14px;
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: #0a0a0a;
+        background: linear-gradient(135deg, #ffffff 0%, #d6e8f7 50%, #a8d4f5 100%);
+        background-size: 200% 200%;
+        animation: v11colorFlow 6s ease-in-out infinite;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
+        box-shadow: 0 0 30px rgba(168,212,245,0.15), 0 4px 20px rgba(0,0,0,0.3);
       }
-      .v11-calendly-wrap iframe {
-        border: none !important;
+      .v11-cta-btn:hover {
+        transform: translateY(-2px) scale(1.03);
+        box-shadow: 0 0 50px rgba(168,212,245,0.25), 0 8px 30px rgba(0,0,0,0.4);
+      }
+      .v11-cta-btn:active {
+        transform: translateY(0) scale(0.98);
+      }
+      .v11-cta-btn svg {
+        transition: transform 0.25s ease;
+      }
+      .v11-cta-btn:hover svg {
+        transform: translateX(3px);
       }
     `;
     document.head.appendChild(s);
@@ -1417,7 +1439,7 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
   return (
     <div
       ref={containerRef}
-      className="flex flex-col min-h-[420px] md:min-h-[520px] lg:min-h-[640px] relative overflow-hidden"
+      className="flex flex-col items-center justify-center min-h-[380px] md:min-h-[420px] lg:min-h-[480px] relative overflow-hidden"
     >
       {/* Ambient glow — brand blue, behind the headline */}
       <div
@@ -1453,23 +1475,27 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
         </p>
       </div>
 
-      {/* Calendly inline — real booking, embedded right in the card */}
+      {/* CTA button — opens Calendly */}
       <div
-        className="flex-1 flex items-start justify-center px-5 md:px-10 lg:px-14 pt-6 pb-8 md:pb-10 relative z-10"
+        className="flex items-center justify-center px-8 pt-8 pb-12 md:pb-14 relative z-10"
         style={{
           opacity: visible ? 1 : 0,
           transform: visible ? "translateY(0)" : "translateY(20px)",
           transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.25s",
         }}
       >
-        <div className="v11-calendly-wrap w-full" style={{ maxWidth: 740, height: 320 }}>
-          <iframe
-            src={`${CALENDLY_URL}?hide_gdpr_banner=1&hide_landing_page_details=1&background_color=0a0a0a&text_color=ffffff&primary_color=a8d4f5`}
-            title="Book a call with SpacePay"
-            style={{ width: "100%", height: "100%", border: "none" }}
-            loading="lazy"
-          />
-        </div>
+        <a
+          href={CALENDLY_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="v11-cta-btn"
+        >
+          Book a Call
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M5 12h14" />
+            <path d="m12 5 7 7-7 7" />
+          </svg>
+        </a>
       </div>
     </div>
   );
