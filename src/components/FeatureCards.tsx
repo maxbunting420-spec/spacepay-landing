@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import Lottie from "lottie-react";
 import lockAnimationData from "../../public/lottie/lock.json";
 import { SpacePayAPIPlayground } from "@/components/SpacePayAPI";
+import { getCalApi } from "@calcom/embed-react";
 
 /* ================================================================
    VISUALS — oversized, edge-bleeding, fills the column
@@ -1344,29 +1345,94 @@ function Visual10() {
   return null;
 }
 
-/* 11: CTA — "Effortless Crypto Commerce" with Climatise-style flowing
-   gradient text using SpacePay brand blues + inline Calendly embed. */
-const CALENDLY_URL = "https://calendly.com/spacepay/spacepay-meeting";
+/* 11: CTA — rolling time display + Cal.com inline embed in custom dark modal */
+const CAL_LINK = "spacepay/15min";
+const CAL_ORIGIN = "https://cal.eu";
 const V11_CSS_ID = "v11-cta-css";
 
 function Visual11() {
-  return null; // Rendering handled by Visual11CalendarCard
+  return null;
 }
 
+const V11_TIMES = ["10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM"];
+const V11_CYCLE = 2000;
+
 function Visual11CalendarCard({ title, body }: { title: string; body: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = React.useState(false);
+  const targetRef = useRef<HTMLDivElement>(null);
+  const [started, setStarted] = React.useState(false);
+  const [timeIdx, setTimeIdx] = React.useState(0);
+  const [modalOpen, setModalOpen] = React.useState(false);
+  const calContainerRef = React.useRef<HTMLDivElement>(null);
+  const calInlineCreated = React.useRef(false);
+  const calInitialized = React.useRef(false);
 
   React.useEffect(() => {
-    const el = containerRef.current;
+    const el = targetRef.current;
     if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect(); } },
-      { threshold: 0.15 }
+    const obs = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting && !started) { setStarted(true); obs.disconnect(); } },
+      { threshold: 0.5 }
     );
-    observer.observe(el);
-    return () => observer.disconnect();
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [started]);
+
+  React.useEffect(() => {
+    if (!started) return;
+    const iv = setInterval(() => {
+      setTimeIdx((prev) => (prev + 1) % V11_TIMES.length);
+    }, V11_CYCLE);
+    return () => clearInterval(iv);
+  }, [started]);
+
+  // Initialize Cal.com SDK with dark theme + hide event details
+  React.useEffect(() => {
+    if (calInitialized.current) return;
+    calInitialized.current = true;
+    (async () => {
+      const cal = await getCalApi();
+      cal("ui", {
+        theme: "dark",
+        hideEventTypeDetails: true,
+        layout: "month_view",
+        styles: {
+          branding: { brandColor: "#4f8ef7" },
+          body: { background: "#0a0a0a" },
+        },
+      });
+    })();
   }, []);
+
+  // When modal opens, inject Cal.com inline embed into our container
+  React.useEffect(() => {
+    if (!modalOpen || !calContainerRef.current || calInlineCreated.current) return;
+    calInlineCreated.current = true;
+    (async () => {
+      const cal = await getCalApi();
+      cal("inline", {
+        calLink: CAL_LINK,
+        elementOrSelector: calContainerRef.current!,
+        config: { theme: "dark", layout: "month_view" },
+        calOrigin: CAL_ORIGIN,
+      });
+    })();
+  }, [modalOpen]);
+
+  // Lock body scroll when modal open
+  React.useEffect(() => {
+    if (modalOpen) {
+      document.body.style.overflow = "hidden";
+      return () => { document.body.style.overflow = ""; };
+    }
+  }, [modalOpen]);
+
+  // Close on Escape
+  React.useEffect(() => {
+    if (!modalOpen) return;
+    const handler = (e: KeyboardEvent) => { if (e.key === "Escape") setModalOpen(false); };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [modalOpen]);
 
   const injected = React.useRef(false);
   React.useEffect(() => {
@@ -1375,128 +1441,176 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
     const s = document.createElement("style");
     s.id = V11_CSS_ID;
     s.textContent = `
-      @keyframes v11colorFlow {
-        0% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-        100% { background-position: 0% 50%; }
-      }
-      @keyframes v11glowPulse {
-        0%, 100% { opacity: 0.25; transform: translate(-50%, -50%) scale(1); }
-        50% { opacity: 0.5; transform: translate(-50%, -50%) scale(1.08); }
-      }
-      .v11-gradient-text {
-        background: linear-gradient(
-          97deg,
-          #ffffff 0%,
-          #d6e8f7 18%,
-          #a8d4f5 35%,
-          #daedf9 55%,
-          #e8f2fb 75%,
-          #ffffff 100%
-        );
-        background-size: 300% 100%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: v11colorFlow 6s ease-in-out infinite;
-      }
-      .v11-cta-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 10px;
-        padding: 16px 36px;
-        border-radius: 14px;
-        font-size: 17px;
-        font-weight: 600;
-        letter-spacing: -0.01em;
-        color: #0a0a0a;
-        background: linear-gradient(135deg, #ffffff 0%, #d6e8f7 50%, #a8d4f5 100%);
-        background-size: 200% 200%;
-        animation: v11colorFlow 6s ease-in-out infinite;
-        border: none;
-        cursor: pointer;
-        transition: transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.25s ease;
-        box-shadow: 0 0 30px rgba(168,212,245,0.15), 0 4px 20px rgba(0,0,0,0.3);
-      }
-      .v11-cta-btn:hover {
-        transform: translateY(-2px) scale(1.03);
-        box-shadow: 0 0 50px rgba(168,212,245,0.25), 0 8px 30px rgba(0,0,0,0.4);
-      }
-      .v11-cta-btn:active {
-        transform: translateY(0) scale(0.98);
-      }
-      .v11-cta-btn svg {
-        transition: transform 0.25s ease;
-      }
-      .v11-cta-btn:hover svg {
-        transform: translateX(3px);
+      @keyframes v11glow {
+        0%, 100% { text-shadow: 0 0 40px rgba(79,142,247,0.2); }
+        50% { text-shadow: 0 0 80px rgba(79,142,247,0.4), 0 0 120px rgba(168,212,245,0.15); }
       }
     `;
     document.head.appendChild(s);
     injected.current = true;
   }, []);
 
+  const openCal = React.useCallback(() => {
+    setModalOpen(true);
+  }, []);
+
   return (
     <div
-      ref={containerRef}
-      className="flex flex-col items-center justify-center min-h-[380px] md:min-h-[420px] lg:min-h-[480px] relative overflow-hidden"
+      ref={targetRef}
+      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative"
     >
-      {/* Ambient glow — brand blue, behind the headline */}
-      <div
-        className="absolute pointer-events-none"
-        style={{
-          width: 1000, height: 500,
-          top: "18%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          borderRadius: "50%",
-          background: "radial-gradient(ellipse, rgba(168,212,245,0.06) 0%, rgba(214,232,247,0.02) 50%, transparent 70%)",
-          animation: visible ? "v11glowPulse 5s ease-in-out infinite" : "none",
-        }}
-      />
+      {/* Rolling time display — hero visual */}
+      <div className="mb-6 flex-shrink-0 relative">
+        <p className="text-[13px] font-medium text-white/20 tracking-widest uppercase mb-3">Next available</p>
 
-      {/* Title + body */}
-      <div
-        className="flex flex-col items-center text-center px-8 md:px-16 lg:px-20 pt-12 md:pt-16 lg:pt-20 relative z-10"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(28px)",
-          transition: "all 1s cubic-bezier(0.16,1,0.3,1)",
-        }}
-      >
-        <h2
-          className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
-          style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
-        >
-          {title}
-        </h2>
-
-        <p className="mt-5 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[400px]">
-          {body}
-        </p>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={timeIdx}
+            initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="tabular-nums cursor-pointer"
+            onClick={openCal}
+            style={{
+              fontSize: "clamp(56px, 10vw, 100px)",
+              fontWeight: 700,
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              color: "#4f8ef7",
+              animation: started ? "v11glow 3s ease-in-out infinite" : "none",
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {V11_TIMES[timeIdx]}
+          </motion.div>
+        </AnimatePresence>
       </div>
 
-      {/* CTA button — opens Calendly */}
-      <div
-        className="flex items-center justify-center px-8 pt-8 pb-12 md:pb-14 relative z-10"
-        style={{
-          opacity: visible ? 1 : 0,
-          transform: visible ? "translateY(0)" : "translateY(20px)",
-          transition: "all 1s cubic-bezier(0.16,1,0.3,1) 0.25s",
-        }}
+      <h2
+        className="font-semibold leading-[1.05] tracking-[-0.035em] text-white max-w-[520px]"
+        style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
       >
-        <a
-          href={CALENDLY_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="v11-cta-btn"
+        {title}
+      </h2>
+
+      <p className="mt-4 text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[420px]">
+        {body}
+      </p>
+
+      {/* Book a Call — same style as v10 checkout button */}
+      <div
+        onClick={openCal}
+        className="mt-8 w-full max-w-[380px] h-[64px] rounded-2xl bg-[#4f8ef7] flex items-center justify-center gap-3 cursor-pointer transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group"
+        style={{ boxShadow: "0 0 30px rgba(79,142,247,0.25), 0 4px 20px rgba(79,142,247,0.2)" }}
+      >
+        <span className="text-[17px] font-semibold text-white tracking-[-0.02em]">Book a Call</span>
+        <svg
+          width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+          className="transition-transform duration-300 group-hover:translate-x-1"
         >
-          Book a Call
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M5 12h14" />
-            <path d="m12 5 7 7-7 7" />
-          </svg>
-        </a>
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
       </div>
+
+      {/* Custom dark modal with Cal.com inline embed inside */}
+      <AnimatePresence>
+        {modalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            onClick={() => setModalOpen(false)}
+            style={{
+              position: "fixed",
+              inset: 0,
+              zIndex: 9999,
+              background: "rgba(0,0,0,0.82)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "24px",
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                width: "100%",
+                maxWidth: 580,
+                height: "min(85vh, 700px)",
+                background: "#0a0a0a",
+                borderRadius: 20,
+                border: "1px solid rgba(255,255,255,0.08)",
+                boxShadow: "0 32px 100px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.03), 0 0 60px rgba(79,142,247,0.08)",
+                overflow: "hidden",
+                display: "flex",
+                flexDirection: "column",
+                position: "relative",
+              }}
+            >
+              {/* Header */}
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                flexShrink: 0,
+              }}>
+                <span style={{ fontSize: 15, fontWeight: 600, color: "rgba(255,255,255,0.9)", letterSpacing: "-0.01em" }}>
+                  Book a Call
+                </span>
+                <button
+                  onClick={() => setModalOpen(false)}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 10,
+                    border: "1px solid rgba(255,255,255,0.08)",
+                    background: "rgba(255,255,255,0.04)",
+                    color: "rgba(255,255,255,0.5)",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    fontSize: 18,
+                    lineHeight: 1,
+                    transition: "all 0.15s",
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.1)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.9)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+                    e.currentTarget.style.color = "rgba(255,255,255,0.5)";
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Cal.com inline embed container — SDK injects iframe here */}
+              <div
+                ref={calContainerRef}
+                style={{
+                  flex: 1,
+                  overflow: "auto",
+                  background: "#0a0a0a",
+                  colorScheme: "dark",
+                }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
