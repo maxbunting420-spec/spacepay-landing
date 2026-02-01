@@ -1413,7 +1413,7 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
         calLink: CAL_LINK,
         elementOrSelector: calContainerRef.current!,
         config: { theme: "dark", layout: "month_view" },
-        calOrigin: CAL_ORIGIN,
+        ...({ calOrigin: CAL_ORIGIN } as any),
       });
     })();
   }, [modalOpen]);
