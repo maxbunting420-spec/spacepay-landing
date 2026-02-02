@@ -155,7 +155,7 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
   const accentWord = "Gas";
 
   return (
-    <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-6 md:px-16 lg:px-10 relative"
+    <div className="flex flex-col items-center justify-center text-center h-full overflow-hidden px-6 md:px-16 lg:px-10 relative"
       style={{ paddingBottom: 180 }}
     >
       {/* Intersection target at 90% */}
@@ -277,7 +277,7 @@ function Visual4CryptoCard({ title, body }: { title: string; body: string }) {
   return (
     <div
       ref={targetRef}
-      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative"
+      className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative"
     >
       {/* Large counter */}
       <div
@@ -588,7 +588,7 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
+    <div className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative">
       {/* Lottie lock — 120px, white → Sui blue gentle fade on lock */}
       <div
         className="mb-4 flex-shrink-0"
@@ -1173,7 +1173,7 @@ function Visual9PayCard({ title, body }: { title: string; body: string }) {
   const gridH = NFC_ROWS * NFC_PX * scale;
 
   return (
-    <div className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative">
+    <div className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative">
       {/* Arcs — full perfect semicircle */}
       <div className="flex-shrink-0" style={{ width: titleW > 0 ? titleW : 120, height: titleW > 0 ? titleW / 2 : 60, position: "relative", overflow: "hidden" }}>
         {titleW > 0 && (
@@ -1288,7 +1288,7 @@ function Visual10CheckoutCard({ title, body }: { title: string; body: string }) 
   return (
     <div
       ref={containerRef}
-      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-20 relative overflow-hidden"
+      className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-20 relative overflow-hidden"
     >
       <style>{`
         .v10-btn { width: 100%; max-width: 380px; height: 64px; border-radius: 16px; background: #4f8ef7; position: relative; overflow: hidden; }
@@ -1457,7 +1457,7 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
   return (
     <div
       ref={targetRef}
-      className="flex flex-col items-center justify-center text-center min-h-[420px] md:min-h-[520px] lg:h-[600px] px-8 md:px-16 lg:px-10 relative"
+      className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative"
     >
       {/* Rolling time display — hero visual */}
       <div className="mb-6 flex-shrink-0 relative">
@@ -1747,7 +1747,7 @@ function FeatureCard({
       <motion.div
         style={{ scale, top: `calc(-5vh + ${i * 25}px)` }}
         className={cn(
-          "relative w-full overflow-hidden rounded-[42px] border-2 origin-top",
+          "relative w-full h-[600px] overflow-hidden rounded-[42px] border-2 origin-top",
           bgMap[card.variant]
         )}
       >
@@ -1766,7 +1766,7 @@ function FeatureCard({
         ) : (
           <div
             className={cn(
-              "relative flex min-h-[420px] md:min-h-[520px] lg:h-[600px]",
+              "relative flex h-full",
               card.layout === "center"
                 ? "flex-col"
                 : card.layout === "right"
@@ -1808,8 +1808,8 @@ function FeatureCard({
               className={cn(
                 "relative",
                 card.layout === "center"
-                  ? "flex-1 min-h-[220px] md:min-h-[300px]"
-                  : "lg:w-[55%] min-h-[260px] md:min-h-[320px]"
+                  ? "flex-1 min-h-0"
+                  : "lg:w-[55%] flex-1 min-h-0"
               )}
             >
               <Visual />
