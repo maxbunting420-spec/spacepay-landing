@@ -37,7 +37,7 @@ function Visual1() {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden origin-top-right scale-[0.5] sm:scale-[0.65] lg:scale-100" style={{ perspective: "1200px" }}>
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
@@ -664,7 +664,7 @@ function Visual7() {
   const barData = [45,52,58,48,55,32,28,50,62,68,58,65,35,30,55,70,75,64,72,38,33,60,78,82,70,76,40,35,65,80];
 
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden origin-top-right scale-[0.5] sm:scale-[0.65] lg:scale-100" style={{ perspective: "1200px" }}>
       {/* 3D tilted dashboard */}
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -942,7 +942,7 @@ function Visual8() {
   ];
 
   return (
-    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden" style={{ paddingLeft: "8%" }}>
+    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden origin-bottom-left scale-[0.6] sm:scale-[0.75] lg:scale-100" style={{ paddingLeft: "8%" }}>
       {/* Realistic iPhone — holyheld style */}
       <div className="relative translate-y-20" style={{ width: 320 }}>
         {/* Side buttons — left */}
@@ -1768,10 +1768,10 @@ function FeatureCard({
             className={cn(
               "relative flex h-full",
               card.layout === "center"
-                ? "flex-col-reverse lg:flex-col"
+                ? "flex-col"
                 : card.layout === "right"
-                  ? "flex-col-reverse lg:flex-row-reverse"
-                  : "flex-col-reverse lg:flex-row"
+                  ? "flex-col lg:flex-row-reverse"
+                  : "flex-col lg:flex-row"
             )}
           >
             {/* Text column */}
@@ -1779,8 +1779,8 @@ function FeatureCard({
               className={cn(
                 "flex flex-col justify-center z-10 shrink-0",
                 card.layout === "center"
-                  ? "px-6 pb-6 pt-0 lg:px-20 lg:pt-16 lg:pb-0 text-center max-w-[600px] mx-auto"
-                  : "px-6 pb-6 pt-0 lg:p-16 lg:w-[45%]"
+                  ? "px-6 pt-8 pb-0 lg:px-20 lg:pt-16 text-center max-w-[600px] mx-auto"
+                  : "px-6 pt-6 lg:p-16 lg:w-[45%]"
               )}
             >
               <h2
