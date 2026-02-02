@@ -1768,19 +1768,19 @@ function FeatureCard({
             className={cn(
               "relative flex h-full",
               card.layout === "center"
-                ? "flex-col"
+                ? "flex-col-reverse lg:flex-col"
                 : card.layout === "right"
-                  ? "flex-col lg:flex-row-reverse"
-                  : "flex-col lg:flex-row"
+                  ? "flex-col-reverse lg:flex-row-reverse"
+                  : "flex-col-reverse lg:flex-row"
             )}
           >
             {/* Text column */}
             <div
               className={cn(
-                "flex flex-col justify-center z-10",
+                "flex flex-col justify-center z-10 shrink-0",
                 card.layout === "center"
-                  ? "px-8 pt-10 pb-0 md:px-16 md:pt-14 lg:px-20 lg:pt-16 text-center max-w-[600px] mx-auto"
-                  : "p-8 sm:p-10 md:p-14 lg:p-16 lg:w-[45%]"
+                  ? "px-6 pb-6 pt-0 lg:px-20 lg:pt-16 lg:pb-0 text-center max-w-[600px] mx-auto"
+                  : "px-6 pb-6 pt-0 lg:p-16 lg:w-[45%]"
               )}
             >
               <h2
@@ -1788,13 +1788,13 @@ function FeatureCard({
                   "font-semibold leading-[1.05] tracking-[-0.035em]",
                   dark ? "text-white" : "text-[#0a0a0a]"
                 )}
-                style={{ fontSize: "clamp(28px, 3.2vw, 44px)" }}
+                style={{ fontSize: "clamp(24px, 3.2vw, 44px)" }}
               >
                 {card.title}
               </h2>
               <p
                 className={cn(
-                  "mt-5 text-[16px] leading-[1.7]",
+                  "mt-3 lg:mt-5 text-[14px] lg:text-[16px] leading-[1.6] lg:leading-[1.7]",
                   card.layout === "center" ? "mx-auto max-w-[380px]" : "max-w-[360px]",
                   dark ? "text-white/40" : "text-[#737373]"
                 )}
