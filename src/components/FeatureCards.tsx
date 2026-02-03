@@ -22,6 +22,14 @@ import { getCalApi } from "@calcom/embed-react";
 function Visual1() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -36,8 +44,29 @@ function Visual1() {
     return () => observer.disconnect();
   }, []);
 
+  // Mobile: centered, no 3D, fits in card
+  if (isMobile) {
+    return (
+      <div ref={containerRef} className="absolute inset-0 flex items-center justify-center overflow-hidden p-4">
+        <div
+          className="w-full max-w-[340px] h-[240px] sm:h-[280px] rounded-xl overflow-hidden bg-white transition-all duration-700"
+          style={{
+            boxShadow: visible
+              ? "0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)"
+              : "none",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          <SpacePayAPIPlayground />
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: 3D tilted, oversized
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden origin-top-right scale-[0.5] sm:scale-[0.65] lg:scale-100" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
@@ -643,6 +672,14 @@ function Visual6() {
 function Visual7() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -663,8 +700,78 @@ function Visual7() {
   // Natural daily transaction data — steady business, slight weekly dips on weekends
   const barData = [45,52,58,48,55,32,28,50,62,68,58,65,35,30,55,70,75,64,72,38,33,60,78,82,70,76,40,35,65,80];
 
+  // Mobile: simplified dashboard card, no 3D
+  if (isMobile) {
+    return (
+      <div ref={containerRef} className="absolute inset-0 flex items-center justify-center overflow-hidden p-4">
+        <div
+          className="w-full max-w-[340px] rounded-xl overflow-hidden bg-white transition-all duration-700"
+          style={{
+            boxShadow: visible
+              ? "0 8px 30px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.06)"
+              : "none",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          {/* Simplified mobile dashboard */}
+          <div className="h-[4px]" style={{ background: "linear-gradient(90deg, #c7d2fe 0%, #dbeafe 40%, #e0e7ff 100%)" }} />
+          <div className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 36 36" fill="none" className="flex-shrink-0">
+                <path d="M20.525 21.599H13.6849V14.401H20.525V21.599ZM6.84004 0C5.02634 0.00134551 3.28729 0.760133 2.00481 2.10972C0.722335 3.45931 0.0012786 5.28936 0 7.19797L0 10.7995C0 12.7085 0.720645 14.5393 2.0034 15.8892C3.28616 17.2391 5.02595 17.9975 6.84004 17.9975V8.27995C6.84131 7.9934 6.95005 7.71897 7.14259 7.51635C7.33514 7.31373 7.59592 7.1993 7.86822 7.19797H26.3417C26.6135 7.19931 26.8738 7.3139 27.0656 7.51666C27.2573 7.71943 27.365 7.99387 27.365 8.27995V10.8198H34.2099V0H6.84004ZM6.84004 25.2005H0V36H6.84004V25.2005ZM27.365 17.9975V27.72C27.365 28.0057 27.2572 28.2796 27.0653 28.4815C26.8734 28.6835 26.6131 28.7969 26.3417 28.7969H13.6849V36H27.365C28.2639 36 29.154 35.8137 29.9844 35.4517C30.8149 35.0897 31.5695 34.5591 32.2051 33.8903C32.8407 33.2214 33.3449 32.4273 33.6888 31.5534C34.0328 30.6795 34.2099 29.7429 34.2099 28.7969V25.2005C34.2099 24.2546 34.0328 23.3179 33.6888 22.444C33.3449 21.5701 32.8407 20.776 32.2051 20.1072C31.5695 19.4383 30.8149 18.9077 29.9844 18.5458C29.154 18.1838 28.2639 17.9975 27.365 17.9975Z" fill="#1CA5F9"/>
+              </svg>
+              <span className="text-[14px] font-bold text-[#1a1a2e]">Analytics</span>
+            </div>
+
+            {/* Stats grid */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              {[
+                { label: "Volume", val: "$824K", pct: "+342%" },
+                { label: "Transactions", val: "12,847", pct: "+215%" },
+              ].map((s) => (
+                <div
+                  key={s.label}
+                  className="rounded-lg border border-[#eef0f7] p-2 transition-all duration-500"
+                  style={{
+                    opacity: visible ? 1 : 0,
+                    transform: visible ? "translateY(0)" : "translateY(8px)",
+                  }}
+                >
+                  <p className="text-[10px] text-[#8b8fa8] font-medium">{s.label}</p>
+                  <p className="text-[16px] font-bold text-[#1a1a2e] leading-tight">{s.val}</p>
+                  <p className="text-[9px] text-[#22c55e] font-medium">{s.pct}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Mini chart */}
+            <div className="rounded-lg border border-[#eef0f7] p-2">
+              <p className="text-[10px] font-semibold text-[#1a1a2e] mb-2">Daily Transactions</p>
+              <div className="flex items-end gap-[2px] h-[50px]">
+                {barData.slice(0, 20).map((h, i) => (
+                  <div
+                    key={i}
+                    className="flex-1 rounded-t-[2px] transition-all ease-out"
+                    style={{
+                      height: visible ? `${Math.max(h, 5)}%` : "5%",
+                      transitionDuration: "600ms",
+                      transitionDelay: `${300 + i * 30}ms`,
+                      backgroundColor: "#6366f1",
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: 3D tilted dashboard
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden origin-top-right scale-[0.5] sm:scale-[0.65] lg:scale-100" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
       {/* 3D tilted dashboard */}
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -916,6 +1023,14 @@ function Visual7() {
 function Visual8() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = React.useState(false);
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   React.useEffect(() => {
     const el = containerRef.current;
@@ -941,8 +1056,94 @@ function Visual8() {
     { from: "user", text: "Confirmed, settlements coming through", delay: 5.2 },
   ];
 
+  // Mobile: simplified chat UI, no phone frame
+  if (isMobile) {
+    return (
+      <div ref={containerRef} className="absolute inset-0 flex items-center justify-center overflow-hidden p-4">
+        <div
+          className="w-full max-w-[320px] rounded-2xl overflow-hidden bg-[#f2f2f7] transition-all duration-700"
+          style={{
+            boxShadow: visible
+              ? "0 8px 30px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.08)"
+              : "none",
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-[#d1d1d6]/40">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 rounded-lg bg-[#0a0a0a] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 36 36" fill="none">
+                    <path d="M20.525 21.599H13.6849V14.401H20.525V21.599ZM6.84004 0C5.02634 0.00134551 3.28729 0.760133 2.00481 2.10972C0.722335 3.45931 0.0012786 5.28936 0 7.19797L0 10.7995C0 12.7085 0.720645 14.5393 2.0034 15.8892C3.28616 17.2391 5.02595 17.9975 6.84004 17.9975V8.27995C6.84131 7.9934 6.95005 7.71897 7.14259 7.51635C7.33514 7.31373 7.59592 7.1993 7.86822 7.19797H26.3417C26.6135 7.19931 26.8738 7.3139 27.0656 7.51666C27.2573 7.71943 27.365 7.99387 27.365 8.27995V10.8198H34.2099V0H6.84004ZM6.84004 25.2005H0V36H6.84004V25.2005ZM27.365 17.9975V27.72C27.365 28.0057 27.2572 28.2796 27.0653 28.4815C26.8734 28.6835 26.6131 28.7969 26.3417 28.7969H13.6849V36H27.365C28.2639 36 29.154 35.8137 29.9844 35.4517C30.8149 35.0897 31.5695 34.5591 32.2051 33.8903C32.8407 33.2214 33.3449 32.4273 33.6888 31.5534C34.0328 30.6795 34.2099 29.7429 34.2099 28.7969V25.2005C34.2099 24.2546 34.0328 23.3179 33.6888 22.444C33.3449 21.5701 32.8407 20.776 32.2051 20.1072C31.5695 19.4383 30.8149 18.9077 29.9844 18.5458C29.154 18.1838 28.2639 17.9975 27.365 17.9975Z" fill="#fff"/>
+                  </svg>
+                </div>
+                <span className="text-[13px] font-semibold text-[#0a0a0a]">Support</span>
+              </div>
+              <div className="rounded-full bg-[#f0fdf4] px-2 py-0.5 flex items-center gap-1">
+                <div className="h-1.5 w-1.5 rounded-full bg-[#22c55e]" />
+                <span className="text-[9px] font-medium text-[#22c55e]">Live</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="px-3 py-3 flex flex-col gap-2 max-h-[200px] overflow-hidden">
+            {messages.slice(0, 4).map((msg, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                animate={visible ? { opacity: 1, y: 0 } : {}}
+                transition={{
+                  type: "spring",
+                  stiffness: 220,
+                  damping: 26,
+                  delay: msg.delay * 0.6,
+                }}
+                className={cn("flex gap-2", msg.from === "user" ? "flex-row-reverse" : "flex-row")}
+              >
+                {msg.from === "eng" && (
+                  <div className="h-5 w-5 rounded-full bg-[#0a0a0a] flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <span className="text-[6px] font-bold text-white">JM</span>
+                  </div>
+                )}
+                <div
+                  className={cn(
+                    "max-w-[200px] px-2.5 py-1.5",
+                    msg.from === "user"
+                      ? "bg-[#0a0a0a] text-white rounded-[14px] rounded-br-[4px]"
+                      : "bg-white text-[#0a0a0a] rounded-[14px] rounded-bl-[4px] shadow-[0_0.5px_1px_rgba(0,0,0,0.06)]"
+                  )}
+                >
+                  <p className="text-[11px] leading-[1.35]">{msg.text}</p>
+                </div>
+              </motion.div>
+            ))}
+
+            {/* Resolved badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={visible ? { opacity: 1, scale: 1 } : {}}
+              transition={{ type: "spring", stiffness: 200, damping: 22, delay: 3.5 }}
+              className="flex justify-center pt-1"
+            >
+              <div className="flex items-center gap-1.5 rounded-full bg-[#0a0a0a] px-3 py-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.12)]">
+                <div className="h-3 w-3 rounded-full bg-[#22c55e] flex items-center justify-center">
+                  <svg width="6" height="6" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+                </div>
+                <p className="text-[10px] font-semibold text-white">Resolved in 2 min</p>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Desktop: full iPhone mockup
   return (
-    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden origin-bottom-left scale-[0.6] sm:scale-[0.75] lg:scale-100" style={{ paddingLeft: "8%" }}>
+    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden" style={{ paddingLeft: "8%" }}>
       {/* Realistic iPhone — holyheld style */}
       <div className="relative translate-y-20" style={{ width: 320 }}>
         {/* Side buttons — left */}
