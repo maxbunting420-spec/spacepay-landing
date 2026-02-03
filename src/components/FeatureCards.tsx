@@ -155,8 +155,8 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
   const accentWord = "Gas";
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-full overflow-hidden px-6 md:px-16 lg:px-10 relative"
-      style={{ paddingBottom: 180 }}
+    <div className="flex flex-col items-center justify-center text-center h-full overflow-hidden px-5 sm:px-6 md:px-16 lg:px-10 relative"
+      style={{ paddingBottom: "clamp(60px, 15vw, 180px)" }}
     >
       {/* Intersection target at 90% */}
       <div
@@ -166,21 +166,21 @@ function Visual3GaslessCard({ body }: { title: string; body: string }) {
       />
 
       {/* Description above title (order: -1 like holyheld) */}
-      <p className="text-[16px] leading-[1.7] text-white/40 mx-auto max-w-[780px] mb-4">
+      <p className="text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] lg:leading-[1.7] text-white/40 mx-auto max-w-[780px] mb-3 lg:mb-4">
         {body}
       </p>
 
       {/* Big title with cascading accent word on "gas" — holyheld gasless style */}
       <h2
-        className="font-bold leading-[1] tracking-[-0.04em] text-white whitespace-nowrap"
-        style={{ fontSize: "clamp(36px, 6vw, 64px)" }}
+        className="font-bold leading-[1] tracking-[-0.04em] text-white"
+        style={{ fontSize: "clamp(28px, 7vw, 64px)" }}
       >
         <span className="relative inline-block">Zero</span>{" "}
         <span className="relative inline-block">
           {accentWord},
           {/* Cascading ghost echoes below — just "Gas" without comma */}
           <span className="absolute left-0 top-full" style={{ color: "rgba(77,162,255,0.25)" }}>
-            {Array.from({ length: 16 }).map((_, i) => (
+            {Array.from({ length: 10 }).map((_, i) => (
               <i
                 key={i}
                 className="block not-italic"
@@ -277,7 +277,7 @@ function Visual4CryptoCard({ title, body }: { title: string; body: string }) {
   return (
     <div
       ref={targetRef}
-      className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative"
+      className="flex flex-col items-center justify-center text-center h-full px-5 sm:px-8 md:px-16 lg:px-10 relative"
     >
       {/* Large counter */}
       <div
@@ -588,7 +588,7 @@ function Visual6SecurityCard({ title, body }: { title: string; body: string }) {
   }, []);
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative">
+    <div className="flex flex-col items-center justify-center text-center h-full px-5 sm:px-8 md:px-16 lg:px-10 relative">
       {/* Lottie lock — 120px, white → Sui blue gentle fade on lock */}
       <div
         className="mb-4 flex-shrink-0"
@@ -1173,7 +1173,7 @@ function Visual9PayCard({ title, body }: { title: string; body: string }) {
   const gridH = NFC_ROWS * NFC_PX * scale;
 
   return (
-    <div className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative">
+    <div className="flex flex-col items-center justify-center text-center h-full px-5 sm:px-8 md:px-16 lg:px-10 relative">
       {/* Arcs — full perfect semicircle */}
       <div className="flex-shrink-0" style={{ width: titleW > 0 ? titleW : 120, height: titleW > 0 ? titleW / 2 : 60, position: "relative", overflow: "hidden" }}>
         {titleW > 0 && (
@@ -1457,7 +1457,7 @@ function Visual11CalendarCard({ title, body }: { title: string; body: string }) 
   return (
     <div
       ref={targetRef}
-      className="flex flex-col items-center justify-center text-center h-full px-8 md:px-16 lg:px-10 relative"
+      className="flex flex-col items-center justify-center text-center h-full px-5 sm:px-8 md:px-16 lg:px-10 relative"
     >
       {/* Rolling time display — hero visual */}
       <div className="mb-6 flex-shrink-0 relative">
@@ -1743,11 +1743,11 @@ function FeatureCard({
   const isCalendarCard = i === 10;
 
   return (
-    <div className="flex items-center justify-center sticky top-[80px] h-screen max-h-[720px] min-h-[500px]">
+    <div className="flex items-center justify-center sticky top-[60px] lg:top-[80px] h-screen max-h-[520px] lg:max-h-[720px] min-h-[400px] lg:min-h-[500px]">
       <motion.div
-        style={{ scale, top: `calc(-5vh + ${i * 25}px)` }}
+        style={{ scale, top: `calc(-3vh + ${i * 16}px)` }}
         className={cn(
-          "relative w-full h-[600px] overflow-hidden rounded-[42px] border-2 origin-top",
+          "relative w-full h-[420px] sm:h-[480px] lg:h-[600px] overflow-hidden rounded-[24px] lg:rounded-[42px] border-2 origin-top",
           bgMap[card.variant]
         )}
       >
@@ -1779,8 +1779,8 @@ function FeatureCard({
               className={cn(
                 "flex flex-col justify-center z-10 shrink-0",
                 card.layout === "center"
-                  ? "px-6 pt-8 pb-0 lg:px-20 lg:pt-16 text-center max-w-[600px] mx-auto"
-                  : "px-6 pt-6 lg:p-16 lg:w-[45%]"
+                  ? "px-5 pt-6 pb-0 sm:px-8 sm:pt-8 lg:px-20 lg:pt-16 text-center max-w-[600px] mx-auto"
+                  : "px-5 pt-5 sm:px-8 sm:pt-6 lg:p-16 lg:w-[45%]"
               )}
             >
               <h2
@@ -1788,13 +1788,13 @@ function FeatureCard({
                   "font-semibold leading-[1.05] tracking-[-0.035em]",
                   dark ? "text-white" : "text-[#0a0a0a]"
                 )}
-                style={{ fontSize: "clamp(24px, 3.2vw, 44px)" }}
+                style={{ fontSize: "clamp(22px, 5vw, 44px)" }}
               >
                 {card.title}
               </h2>
               <p
                 className={cn(
-                  "mt-3 lg:mt-5 text-[14px] lg:text-[16px] leading-[1.6] lg:leading-[1.7]",
+                  "mt-2 sm:mt-3 lg:mt-5 text-[13px] sm:text-[14px] lg:text-[16px] leading-[1.5] lg:leading-[1.7]",
                   card.layout === "center" ? "mx-auto max-w-[380px]" : "max-w-[360px]",
                   dark ? "text-white/40" : "text-[#737373]"
                 )}
