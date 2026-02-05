@@ -36,7 +36,7 @@ function Visual1() {
   }, []);
 
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden scale-[0.45] lg:scale-100 origin-top-right" style={{ perspective: "1200px" }}>
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{
@@ -352,7 +352,7 @@ function Visual5() {
   const activeBubbles = tab === "wallets" ? walletBubbles : networkBubbles;
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden scale-[0.5] lg:scale-100 origin-top-left">
       {/* White gradient fading bottom edge — blend toggle into card */}
       <div
         className="absolute bottom-0 left-0 right-0 h-24 z-10 pointer-events-none"
@@ -651,7 +651,7 @@ function Visual7() {
   const barData = [45,52,58,48,55,32,28,50,62,68,58,65,35,30,55,70,75,64,72,38,33,60,78,82,70,76,40,35,65,80];
 
   return (
-    <div ref={containerRef} className="absolute inset-0 overflow-hidden" style={{ perspective: "1200px" }}>
+    <div ref={containerRef} className="absolute inset-0 overflow-hidden scale-[0.45] lg:scale-100 origin-top-right" style={{ perspective: "1200px" }}>
       {/* 3D tilted dashboard */}
       <div
         className="absolute transition-all duration-[1.6s] ease-[cubic-bezier(0.16,1,0.3,1)]"
@@ -929,7 +929,7 @@ function Visual8() {
   ];
 
   return (
-    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden" style={{ paddingLeft: "8%" }}>
+    <div ref={containerRef} className="absolute inset-0 flex items-end overflow-hidden scale-[0.55] lg:scale-100 origin-bottom-left" style={{ paddingLeft: "8%" }}>
       {/* Realistic iPhone — holyheld style */}
       <div className="relative translate-y-20" style={{ width: 320 }}>
         {/* Side buttons — left */}
